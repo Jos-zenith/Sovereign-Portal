@@ -23,8 +23,14 @@
       <span class="pill green">DPDP: Enforced</span>
       <span class="pill blue">RBI: Localized</span>
       <span class="pill amber" id="threat-pill">Threat Level: Guarded</span>
+      <span class="pill blue" id="live-clock">Sync: --:--:--</span>
     </div>
   </header>
+
+  <section class="live-feed" aria-live="polite">
+    <span class="feed-label">Live Sovereignty Feed</span>
+    <p id="feed-line">Initializing compliance telemetry...</p>
+  </section>
 
   <section class="hero">
     <div class="hero-copy">
@@ -36,15 +42,13 @@
       </div>
     </div>
     <div class="hero-visual card">
-      <h3>Execution Intercept Path</h3>
-      <div class="diagram">
-        <div class="node">Client Trigger</div>
-        <div class="arrow">-></div>
-        <div class="node focus">VICT Intercept</div>
-        <div class="arrow">-></div>
-        <div class="node">Wasm Runtime</div>
-        <div class="arrow">-></div>
-        <div class="node">Forensic Vault</div>
+      <h3>Interactive Terminal</h3>
+      <div class="terminal hero-terminal" id="hero-terminal">
+        <p><span>&gt;</span> vict deploy --function processPayments</p>
+        <p class="hero-line">[SCANNING...]</p>
+        <p class="hero-line warn">[!] VIOLATION FOUND: Function 'processPayments' makes an external API call to 'us-east-1'.</p>
+        <p class="hero-line warn">[!] ACTION: Geofence enforced. Diverting traffic to 'ap-south-1' (Mumbai).</p>
+        <p class="hero-line ok">[STATUS] Function Hardened and Deployed.</p>
       </div>
     </div>
   </section>
@@ -56,6 +60,22 @@
   </section>
 
   <section class="feature-grid">
+    <article class="card feature triple-engine">
+      <h3>Triple-Engine: Secret Sauce</h3>
+      <p>Three controls work together so compliance is runtime behavior, not post-incident paperwork.</p>
+    </article>
+    <article class="card feature triple-engine">
+      <h3>Wasm Sandbox</h3>
+      <p>We compile logic into WebAssembly modules. It's 100x faster than Docker and mathematically isolated.</p>
+    </article>
+    <article class="card feature triple-engine">
+      <h3>eBPF Guardrails</h3>
+      <p>We use kernel-level tracing to block unauthorized network calls. If the code tries to leak data, the kernel kills the process before the packet leaves.</p>
+    </article>
+    <article class="card feature triple-engine">
+      <h3>Consent Gateway</h3>
+      <p>A zero-trust interceptor that checks for DPDP-compliant user consent before the first line of code executes.</p>
+    </article>
     <article class="card feature">
       <h3>Shield Real-Time Consent (DPDP)</h3>
       <p>Intercepts invocations to verify Data Principal consent via a secure Identity Bridge.</p>
@@ -134,6 +154,40 @@
       <div class="map-legend">
         <p><strong>Sovereign Green:</strong> Authorized India-only processing zones.</p>
         <p><strong>Regulatory Red:</strong> Any egress outside India is blocked in-kernel.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card sovereignty-dashboard">
+    <h3>Sovereignty Dashboard (Visual Proof)</h3>
+    <div class="dashboard-grid">
+      <div>
+        <h4>Compliance Map</h4>
+        <svg class="india-map dashboard-map" viewBox="0 0 420 420" aria-label="India sovereignty dashboard map">
+          <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
+          <circle class="city safe" cx="210" cy="125" r="7"></circle>
+          <text x="222" y="129">Delhi</text>
+          <circle class="city safe" cx="178" cy="215" r="7"></circle>
+          <text x="190" y="220">Mumbai</text>
+          <g class="shield-icon" transform="translate(160,200)">
+            <path d="M30 6l18 7v14c0 15-10 28-18 33-8-5-18-18-18-33V13l18-7z"></path>
+          </g>
+          <path class="data-line" d="M178 215 C210 190, 220 160, 210 125"></path>
+          <path class="data-line" d="M178 215 C200 230, 220 245, 225 245"></path>
+        </svg>
+      </div>
+      <div class="dashboard-widgets">
+        <div class="metric">
+          <p>DPDP Consent Monitor</p>
+          <h3 id="consent-checks">0</h3>
+          <p>Live Consent Verifications</p>
+        </div>
+        <div class="metric">
+          <p>Localization Status</p>
+          <h3>BORDER LOCKED</h3>
+          <p>Data routes constrained to India regions.</p>
+        </div>
+        <button class="danger" id="emergency-purge">Emergency RBI Compliance Purge</button>
       </div>
     </div>
   </section>

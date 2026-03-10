@@ -9,10 +9,85 @@ const hbAllow = document.getElementById('hb-allow');
 const hbDeny = document.getElementById('hb-deny');
 const hbTotal = document.getElementById('hb-total');
 const breachBanner = document.getElementById('breach-banner');
+const consentChecks = document.getElementById('consent-checks');
+const heroTerminalLines = document.querySelectorAll('.hero-terminal .hero-line');
+const liveClock = document.getElementById('live-clock');
+const feedLine = document.getElementById('feed-line');
+const bgGrid = document.querySelector('.bg-grid');
 
 const API_BASE = 'http://127.0.0.1:8080';
 const DEMO_PRINCIPAL = 'citizen-001';
 const DEMO_PURPOSE = 'gst-location';
+
+const FEED_MESSAGES = [
+  'Consent verification pipeline online for citizen-001.',
+  'RBI geofence active: outbound routing restricted to ap-south-*.',
+  'Wasm isolation check passed for processPayments module.',
+  'eBPF guardrail signal: unauthorized egress attempts will be terminated.',
+  'Forensic stream healthy: retention and trace integrity in sync.',
+];
+
+let feedIndex = 0;
+
+function animateCounter(el, targetValue) {
+  if (!el || Number.isNaN(targetValue)) {
+    return;
+  }
+  const start = Number.parseFloat(el.textContent) || 0;
+  const durationMs = 350;
+  const startTs = performance.now();
+
+  const tick = (ts) => {
+    const progress = Math.min(1, (ts - startTs) / durationMs);
+    const value = start + ((targetValue - start) * progress);
+    el.textContent = Number.isInteger(targetValue) ? String(Math.round(value)) : value.toFixed(1);
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    }
+  };
+
+  requestAnimationFrame(tick);
+}
+
+function updateClock() {
+  const now = new Date();
+  liveClock.textContent = `Sync: ${now.toLocaleTimeString('en-IN', { hour12: false })}`;
+}
+
+function rotateFeed() {
+  feedLine.style.opacity = '0.25';
+  setTimeout(() => {
+    feedLine.textContent = FEED_MESSAGES[feedIndex % FEED_MESSAGES.length];
+    feedLine.style.opacity = '1';
+    feedIndex += 1;
+  }, 150);
+}
+
+function setupRevealCards() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach((card) => card.classList.add('reveal'));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  cards.forEach((card) => observer.observe(card));
+}
+
+function setupParallaxGrid() {
+  if (!bgGrid) {
+    return;
+  }
+  window.addEventListener('pointermove', (event) => {
+    const moveX = ((event.clientX / window.innerWidth) - 0.5) * 8;
+    const moveY = ((event.clientY / window.innerHeight) - 0.5) * 8;
+    bgGrid.style.transform = `translate(${moveX}px, ${moveY}px)`;
+  });
+}
 
 async function postJson(path, body) {
   const response = await fetch(`${API_BASE}${path}`, {
@@ -44,14 +119,16 @@ async function refreshAuditFeed() {
       hbAllow.textContent = '0';
       hbDeny.textContent = '0';
       hbTotal.textContent = '0';
+      consentChecks.textContent = '0';
       return;
     }
 
     const allowCount = events.filter((event) => event.decision === 'allow').length;
     const denyCount = events.filter((event) => event.decision === 'deny').length;
-    hbAllow.textContent = String(allowCount);
-    hbDeny.textContent = String(denyCount);
-    hbTotal.textContent = String(events.length);
+    animateCounter(hbAllow, allowCount);
+    animateCounter(hbDeny, denyCount);
+    animateCounter(hbTotal, events.length);
+    animateCounter(consentChecks, events.length);
 
     auditFeed.innerHTML = events
       .map((event) => `<p class="${event.decision}">#${event.id} principal=${event.principal_id} purpose=${event.purpose} decision=${event.decision} reason=${event.reason} at=${event.recorded_at}</p>`)
@@ -61,7 +138,15 @@ async function refreshAuditFeed() {
     hbAllow.textContent = '-';
     hbDeny.textContent = '-';
     hbTotal.textContent = '-';
+    consentChecks.textContent = '-';
   }
+}
+
+function animateHeroTerminal() {
+  heroTerminalLines.forEach((line) => line.classList.remove('show'));
+  heroTerminalLines.forEach((line, index) => {
+    setTimeout(() => line.classList.add('show'), 700 + (index * 850));
+  });
 }
 
 roleButtons.forEach((btn) => {
@@ -137,8 +222,13 @@ document.getElementById('simulate-breach').addEventListener('click', async () =>
 
 document.getElementById('kill-switch').addEventListener('click', () => {
   threatPill.textContent = 'Threat Level: Contained';
-  trustScore.textContent = '100.0';
+  animateCounter(trustScore, 100.0);
   alert('RBI Kill-Switch activated: all non-India payment data paths have been revoked.');
+});
+
+document.getElementById('emergency-purge').addEventListener('click', () => {
+  threatPill.textContent = 'Threat Level: Contained';
+  alert('Emergency RBI Compliance Purge executed. All non-localized data paths marked for immediate revoke and purge.');
 });
 
 document.querySelectorAll('.revoke').forEach((btn) => {
@@ -190,3 +280,11 @@ document.getElementById('deny').addEventListener('click', async () => {
 
 setInterval(refreshAuditFeed, 3000);
 refreshAuditFeed();
+animateHeroTerminal();
+setInterval(animateHeroTerminal, 7000);
+updateClock();
+rotateFeed();
+setInterval(updateClock, 1000);
+setInterval(rotateFeed, 3000);
+setupRevealCards();
+setupParallaxGrid();

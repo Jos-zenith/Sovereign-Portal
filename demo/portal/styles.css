@@ -52,6 +52,33 @@ main {
   z-index: 1;
 }
 
+.live-feed {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0.8rem 2rem 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #1f323f;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(6, 20, 28, 0.95), rgba(10, 31, 44, 0.75));
+}
+
+.feed-label {
+  color: #7fd2ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.live-feed p {
+  margin: 0;
+  color: #c7deec;
+  font-size: 0.84rem;
+}
+
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -213,6 +240,26 @@ main {
   font-size: 1.05rem;
 }
 
+.triple-engine {
+  border-color: #2a4152;
+  background: linear-gradient(180deg, rgba(8, 39, 56, 0.32), rgba(255, 255, 255, 0)), var(--panel);
+}
+
+.hero-terminal {
+  min-height: 196px;
+}
+
+.hero-line {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.hero-line.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .edge-table {
   margin-top: 0.8rem;
   width: 100%;
@@ -262,6 +309,42 @@ main {
   color: var(--text);
 }
 
+.sovereignty-dashboard {
+  margin-top: 1rem;
+}
+
+.dashboard-grid {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 0.9rem;
+}
+
+.dashboard-map {
+  margin-top: 0.4rem;
+}
+
+.shield-icon path {
+  fill: #0e3f2a;
+  stroke: #68f0ac;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px rgba(103, 239, 170, 0.7));
+}
+
+.data-line {
+  fill: none;
+  stroke: #68f0ac;
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  animation: flow 1.4s linear infinite;
+}
+
+.dashboard-widgets {
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+
 .panel {
   display: none;
   animation: rise 260ms ease;
@@ -282,6 +365,17 @@ main {
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 1rem;
+}
+
+.card.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 350ms ease, transform 350ms ease;
+}
+
+.card.reveal.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .card p {
@@ -536,6 +630,10 @@ main {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes flow {
+  100% { stroke-dashoffset: -24; }
+}
+
 @media (max-width: 760px) {
   .topbar,
   .role-nav,
@@ -550,6 +648,13 @@ main {
     padding-right: 1rem;
   }
 
+  .live-feed {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .statement,
   .feature-grid {
     margin-left: 1rem;
@@ -561,7 +666,8 @@ main {
   }
 
   .split-grid,
-  .map-wrap {
+  .map-wrap,
+  .dashboard-grid {
     grid-template-columns: 1fr;
   }
 
