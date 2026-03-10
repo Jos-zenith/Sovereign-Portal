@@ -99,10 +99,8 @@
       </div>
       <article class="card full">
         <h2>Forensic Drill-Down</h2>
-        <div class="trace">
-          <p>event_id=evt-9912 source=eBPF action=connect()</p>
-          <p>function=payments.calculate_gst line=42 decision=blocked reason=egress-domain-policy</p>
-          <p>artifact=immutable://vict-evidence/2026-03-10/evt-9912.json retention=30d</p>
+        <div class="trace" id="audit-feed">
+          <p>Waiting for live audit events from gateway...</p>
         </div>
       </article>
     </section>
@@ -117,14 +115,14 @@
               <h4>Location for GST Calculation</h4>
               <p>Granted to: FintechTax App</p>
             </div>
-            <button class="action revoke">One-Click Revoke</button>
+            <button class="action revoke" data-principal="citizen-001" data-purpose="gst-location">One-Click Revoke</button>
           </div>
           <div class="consent-item">
             <div>
               <h4>UPI Transaction Metadata</h4>
               <p>Granted to: SmartLedger</p>
             </div>
-            <button class="action revoke">One-Click Revoke</button>
+            <button class="action revoke" data-principal="citizen-001" data-purpose="upi-metadata">One-Click Revoke</button>
           </div>
         </div>
       </article>

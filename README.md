@@ -95,6 +95,23 @@ python src/vict_cli.py wrap demo/sample_function.py --out dist
 python src/vict_cli.py deploy --region ap-south-1 --workspace .
 ```
 
+## Live Consent + Audit Demo
+
+1. Initialize consent DB:
+
+```bash
+sqlite3 /opt/vict/consent-db/consent.db < compliance/consent_schema.sql
+```
+
+2. Start gateway:
+
+```bash
+uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port 8080
+```
+
+3. Open `demo/portal/index.html` and use Citizen "Agree" / "Deny".
+4. Switch to Auditor panel to see live `/audit/recent` updates.
+
 PowerShell one-shot demo:
 
 ```powershell

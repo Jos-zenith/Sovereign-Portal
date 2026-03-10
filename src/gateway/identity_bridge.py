@@ -5,6 +5,9 @@ Supports passkey/mobile assertions and optional biometric confidence checks.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import os
 from dataclasses import dataclass
 
 
@@ -17,6 +20,15 @@ class IdentityAssertion:
 
 
 ALLOWED_METHODS = {"passkey", "mobile-otp", "biometric"}
+IDENTITY_SECRET = os.getenv("VICT_IDENTITY_SECRET", "dev-secret-change-in-prod")
+
+
+def build_assertion_token(principal_id: str) -> str:
+    return hmac.new(
+        IDENTITY_SECRET.encode("utf-8"),
+        principal_id.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
 
 
 def verify_identity_assertion(
@@ -28,8 +40,8 @@ def verify_identity_assertion(
     if method not in ALLOWED_METHODS:
         return IdentityAssertion(principal_id, method, False, "none")
 
-    # Placeholder verifier: integrate with WebAuthn/FIDO2 and telecom identity APIs.
-    token_ok = assertion_token.startswith("vict-") and len(assertion_token) >= 12
+    expected_token = build_assertion_token(principal_id)
+    token_ok = hmac.compare_digest(assertion_token, expected_token)
 
     if method == "biometric":
         confidence = biometric_confidence or 0.0
