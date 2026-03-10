@@ -247,6 +247,8 @@ main {
 
 .hero-terminal {
   min-height: 196px;
+  max-height: 260px;
+  overflow-y: auto;
 }
 
 .hero-line {
@@ -277,6 +279,148 @@ main {
 
 .edge-table th {
   background: #121d24;
+}
+
+.technical-edge-center {
+  margin-top: 1rem;
+}
+
+.edge-columns {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.edge-card {
+  border: 1px solid #2a3a45;
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: #0a1217;
+}
+
+.edge-terminal {
+  min-height: 128px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.mock-function {
+  border: 1px solid #294050;
+  border-radius: 10px;
+  background: #081017;
+  padding: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.mock-function .status {
+  margin: 0;
+  font-weight: 700;
+}
+
+.mock-function .status.running {
+  color: #76efb6;
+}
+
+.mock-function .status.stopped {
+  color: #ff858f;
+}
+
+.mock-function p {
+  margin: 0.25rem 0 0;
+}
+
+.compliance-dashboard {
+  margin-top: 1rem;
+}
+
+.dashboard-grid-wide {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.dash-card {
+  border: 1px solid #2a3b48;
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: #091116;
+}
+
+.dial-wrap {
+  margin-top: 0.55rem;
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.trust-dial {
+  width: 140px;
+  height: 140px;
+  transform: rotate(-90deg);
+}
+
+.dial-track {
+  fill: none;
+  stroke: #203542;
+  stroke-width: 10;
+}
+
+.dial-progress {
+  fill: none;
+  stroke: #6cf5b3;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 339.3;
+  stroke-dashoffset: 6.8;
+  transition: stroke-dashoffset 400ms ease;
+}
+
+.dial-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Syne", sans-serif;
+  font-size: 1.8rem;
+}
+
+.heatmap .hotspot {
+  fill: #4cd8a1;
+  opacity: 0.35;
+  animation: pulseHotspot 2.4s ease-in-out infinite;
+}
+
+.heatmap .hotspot.med {
+  opacity: 0.24;
+}
+
+.heatmap .hotspot.high {
+  opacity: 0.42;
+}
+
+.trail-list {
+  margin-top: 0.6rem;
+  border: 1px solid #1f313d;
+  border-radius: 10px;
+  background: #060c10;
+  min-height: 168px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 0.55rem;
+  font-size: 0.78rem;
+}
+
+.trail-list p {
+  margin: 0.32rem 0;
+  color: #9fc1d8;
+}
+
+@keyframes pulseHotspot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 .split-demo {
@@ -318,10 +462,20 @@ main {
   display: grid;
   grid-template-columns: 1.25fr 1fr;
   gap: 0.9rem;
+  align-items: start;
 }
 
 .dashboard-map {
   margin-top: 0.4rem;
+  aspect-ratio: 1 / 1;
+  padding: 0.35rem;
+}
+
+.dashboard-map text {
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: #071017;
+  stroke-width: 3;
 }
 
 .shield-icon path {
@@ -529,10 +683,13 @@ main {
   margin-top: 0.8rem;
   width: 100%;
   height: auto;
+  aspect-ratio: 1 / 1;
+  display: block;
   background: radial-gradient(circle at 20% 30%, #0d1822, #080e14 70%);
   border: 1px solid #2a353f;
   border-radius: 10px;
-  padding: 0.6rem;
+  padding: 0.4rem;
+  overflow: visible;
 }
 
 .india-map path {
@@ -543,8 +700,22 @@ main {
 
 .india-map text {
   fill: #9dc2da;
-  font-size: 12px;
+  font-size: clamp(10px, 1.45vw, 12px);
   font-family: "IBM Plex Mono", monospace;
+}
+
+@media (max-width: 1180px) {
+  .edge-columns,
+  .dashboard-grid-wide {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .hero,
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .city.safe {
@@ -669,6 +840,17 @@ main {
   .map-wrap,
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .edge-columns,
+  .dashboard-grid-wide {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-terminal,
+  .edge-terminal,
+  .trail-list {
+    max-height: 220px;
   }
 
   .heartbeat {

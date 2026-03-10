@@ -90,39 +90,67 @@
     </article>
   </section>
 
-  <section class="card">
-    <h3>Technical Edge: Wasm + eBPF</h3>
-    <table class="edge-table">
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th>Standard FaaS Security</th>
-          <th>VICT Sovereign Layer</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Isolation</td>
-          <td>Container-based (Heavy)</td>
-          <td>Wasm Sandbox (Ultra-Light)</td>
-        </tr>
-        <tr>
-          <td>Cold Starts</td>
-          <td>100ms - 1s</td>
-          <td><1ms (Instant)</td>
-        </tr>
-        <tr>
-          <td>Enforcement</td>
-          <td>Post-execution alerts</td>
-          <td>Pre-execution blocking</td>
-        </tr>
-        <tr>
-          <td>Visibility</td>
-          <td>Log scraping</td>
-          <td>eBPF Kernel-level Tracing</td>
-        </tr>
-      </tbody>
-    </table>
+  <section class="card technical-edge-center">
+    <h3>Technical Edge: Isolation + Enforcement + Consent</h3>
+    <div class="edge-columns">
+      <article class="edge-card">
+        <h4>Wasm Sandbox (Isolation Win)</h4>
+        <p>Standard containers have a 3,000ms attack surface. VICT uses Wasm sandboxes with &lt;1ms cold starts, reducing the window for exploitation to near zero.</p>
+      </article>
+      <article class="edge-card">
+        <h4>eBPF Enforcement (Geofencing Win)</h4>
+        <div class="terminal edge-terminal" id="ebpf-stream">
+          <p><span>&gt;</span> [VICT] eBPF stream initialized</p>
+        </div>
+      </article>
+      <article class="edge-card">
+        <h4>DPDP Consent Gateway</h4>
+        <p>Click revoke to simulate zero-trust interception before execution.</p>
+        <div class="mock-function" id="mock-function-state">
+          <p class="status running" id="mock-status">MOCK FUNCTION: RUNNING</p>
+          <p id="mock-detail">Consent valid. Execution allowed.</p>
+        </div>
+        <button class="danger" id="edge-revoke-consent">Revoke Consent</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="card compliance-dashboard">
+    <h3>Compliance-as-a-Service Dashboard</h3>
+    <div class="dashboard-grid-wide">
+      <article class="dash-card">
+        <h4>Trust Score</h4>
+        <div class="dial-wrap">
+          <svg class="trust-dial" viewBox="0 0 140 140" aria-label="DPDP trust score dial">
+            <circle cx="70" cy="70" r="54" class="dial-track"></circle>
+            <circle cx="70" cy="70" r="54" class="dial-progress" id="dial-progress"></circle>
+          </svg>
+          <div class="dial-value" id="dial-value">98</div>
+        </div>
+        <p>0-100 real-time confidence based on consent and localization outcomes.</p>
+      </article>
+
+      <article class="dash-card">
+        <h4>Consent Heatmap</h4>
+        <svg class="india-map heatmap" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="Consent heatmap across India">
+          <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
+          <circle class="hotspot high" cx="178" cy="215" r="18"></circle>
+          <circle class="hotspot med" cx="210" cy="125" r="14"></circle>
+          <circle class="hotspot med" cx="225" cy="245" r="12"></circle>
+          <text x="170" y="245">Mumbai: High consent</text>
+          <text x="222" y="128">Delhi: Medium</text>
+          <text x="237" y="249">Hyderabad: Medium</text>
+        </svg>
+      </article>
+
+      <article class="dash-card">
+        <h4>Audit Trail (Tamper-proof -> SigNoz)</h4>
+        <div class="trail-list" id="trail-list">
+          <p>Bootstrapping secure audit stream...</p>
+        </div>
+        <p>Prepared for 72-hour breach reporting evidence workflows.</p>
+      </article>
+    </div>
   </section>
 
   <section class="card split-demo">
@@ -142,7 +170,7 @@
   <section class="card">
     <h3>Compliance Map: Data Residency in India</h3>
     <div class="map-wrap">
-      <svg class="india-map" viewBox="0 0 420 420" aria-label="India compliance map">
+      <svg class="india-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India compliance map">
         <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
         <circle class="city safe" cx="210" cy="125" r="7"></circle>
         <text x="222" y="129">Delhi</text>
@@ -163,13 +191,13 @@
     <div class="dashboard-grid">
       <div>
         <h4>Compliance Map</h4>
-        <svg class="india-map dashboard-map" viewBox="0 0 420 420" aria-label="India sovereignty dashboard map">
+        <svg class="india-map dashboard-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India sovereignty dashboard map">
           <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
           <circle class="city safe" cx="210" cy="125" r="7"></circle>
           <text x="222" y="129">Delhi</text>
           <circle class="city safe" cx="178" cy="215" r="7"></circle>
-          <text x="190" y="220">Mumbai</text>
-          <g class="shield-icon" transform="translate(160,200)">
+          <text x="206" y="221">Mumbai</text>
+          <g class="shield-icon" transform="translate(158,214)">
             <path d="M30 6l18 7v14c0 15-10 28-18 33-8-5-18-18-18-33V13l18-7z"></path>
           </g>
           <path class="data-line" d="M178 215 C210 190, 220 160, 210 125"></path>
@@ -264,7 +292,7 @@
 
         <article class="card">
           <h2>Live Threat Map: India</h2>
-          <svg class="india-map" viewBox="0 0 420 420" aria-label="India data processing map">
+          <svg class="india-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India data processing map">
             <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
             <circle class="city safe" cx="210" cy="125" r="7"></circle>
             <text x="222" y="129">Delhi</text>
