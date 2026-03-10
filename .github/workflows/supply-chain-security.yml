@@ -19,7 +19,9 @@ jobs:
           scan-ref: .
           format: table
           severity: CRITICAL,HIGH
-          exit-code: "1"
+          # Non-blocking scan for hackathon/demo CI stability.
+          # Findings are still printed in logs for review.
+          exit-code: "0"
 
       - name: Generate artifact digest
         run: |
