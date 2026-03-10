@@ -22,7 +22,21 @@ const dialValue = document.getElementById('dial-value');
 const dialProgress = document.getElementById('dial-progress');
 const trailList = document.getElementById('trail-list');
 
-const API_BASE = 'http://127.0.0.1:8080';
+function resolveApiBase() {
+  const configured = document.querySelector('meta[name="vict-api-base"]')?.getAttribute('content')?.trim();
+  if (configured && !configured.includes('RENDER_API_URL')) {
+    return configured.replace(/\/$/, '');
+  }
+
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://127.0.0.1:8080';
+  }
+
+  return '';
+}
+
+const API_BASE = resolveApiBase();
+const API_IS_CONFIGURED = API_BASE.length > 0;
 const DEMO_PRINCIPAL = 'citizen-001';
 const DEMO_PURPOSE = 'gst-location';
 
@@ -121,7 +135,11 @@ function updateClock() {
 function rotateFeed() {
   feedLine.style.opacity = '0.25';
   setTimeout(() => {
-    feedLine.textContent = FEED_MESSAGES[feedIndex % FEED_MESSAGES.length];
+    if (!API_IS_CONFIGURED && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      feedLine.textContent = 'Set Render API URL in <meta name="vict-api-base" ...> to enable live backend calls.';
+    } else {
+      feedLine.textContent = FEED_MESSAGES[feedIndex % FEED_MESSAGES.length];
+    }
     feedLine.style.opacity = '1';
     feedIndex += 1;
   }, 150);
@@ -154,6 +172,10 @@ function setupParallaxGrid() {
 }
 
 async function postJson(path, body) {
+  if (!API_IS_CONFIGURED && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    throw new Error('API base not configured. Set meta[name="vict-api-base"] to your Render URL.');
+  }
+
   const response = await fetch(`${API_BASE}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -170,6 +192,10 @@ async function postJson(path, body) {
 
 async function refreshAuditFeed() {
   try {
+    if (!API_IS_CONFIGURED && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      throw new Error('api-base-not-configured');
+    }
+
     const response = await fetch(`${API_BASE}/audit/recent?limit=10`);
     if (!response.ok) {
       throw new Error('audit endpoint unavailable');
@@ -200,7 +226,7 @@ async function refreshAuditFeed() {
       .map((event) => `<p class="${event.decision}">#${event.id} principal=${event.principal_id} purpose=${event.purpose} decision=${event.decision} reason=${event.reason} at=${event.recorded_at}</p>`)
       .join('');
   } catch (error) {
-    auditFeed.innerHTML = '<p>Gateway not reachable. Start FastAPI on :8080 for live feed.</p>';
+    auditFeed.innerHTML = '<p>Gateway not reachable. Configure Render URL in meta tag (vict-api-base) or run FastAPI locally on :8080.</p>';
     hbAllow.textContent = '-';
     hbDeny.textContent = '-';
     hbTotal.textContent = '-';

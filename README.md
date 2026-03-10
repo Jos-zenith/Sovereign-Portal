@@ -84,6 +84,27 @@ Open `demo/portal/index.html` in a browser to view the three-role interface:
 - Auditor Command Dashboard
 - Citizen Consent Vault
 
+## Deploy Backend on Render (for Vercel frontend)
+
+1. Create a new Render Web Service from this repo.
+2. Render can auto-detect `render.yaml`, or configure manually:
+   - Build command: `pip install -r src/requirements.txt`
+   - Start command: `uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port $PORT`
+3. Ensure env vars are set:
+   - `VICT_DEMO_SKIP_WASM=true`
+   - `VICT_REGION=ap-south-1`
+   - `VICT_CONSENT_DB=/tmp/vict-consent.db`
+4. Copy your Render URL, for example:
+   - `https://vict-sovereign-faas-api.onrender.com`
+
+Then update frontend API config in `demo/portal/index.html`:
+
+```html
+<meta name="vict-api-base" content="https://YOUR-RENDER_API_URL.onrender.com" />
+```
+
+Without this, the frontend defaults to localhost only during local development.
+
 ## Developer Workflow (Challenge Demo)
 
 ```bash

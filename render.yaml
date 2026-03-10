@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vict-sovereign-faas-api
+    env: python
+    rootDir: .
+    buildCommand: pip install -r src/requirements.txt
+    startCommand: uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+    healthCheckPath: /healthz
+    envVars:
+      - key: VICT_DEMO_SKIP_WASM
+        value: true
+      - key: VICT_REGION
+        value: ap-south-1
+      - key: VICT_CONSENT_DB
+        value: /tmp/vict-consent.db
