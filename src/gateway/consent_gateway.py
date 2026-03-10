@@ -11,6 +11,7 @@ import sqlite3
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
@@ -21,11 +22,13 @@ from src.gateway.identity_bridge import build_assertion_token, verify_identity_a
 from src.runtime.wasm_runner import WasmRunner
 
 
-DB_PATH = os.getenv("VICT_CONSENT_DB", "/opt/vict/consent-db/consent.db")
+DB_PATH = os.getenv("VICT_CONSENT_DB", "vict-consent.db")
 RUNTIME_WASM = os.getenv("VICT_RUNTIME_WASM", "/opt/vict/runtime/handler.wasm")
 VICT_REGION = os.getenv("VICT_REGION", "ap-south-1")
 OPA_POLICY_PATH = os.getenv("VICT_SOVEREIGN_POLICY_PATH", "compliance/sovereign_policy.rego")
 DEMO_SKIP_WASM = os.getenv("VICT_DEMO_SKIP_WASM", "false").lower() == "true"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCHEMA_PATH = REPO_ROOT / "compliance" / "consent_schema.sql"
 
 app = FastAPI(title="VICT Consent Gateway", version="0.1.0")
 runner = WasmRunner()
@@ -64,6 +67,22 @@ def _db() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def _ensure_db() -> None:
+    db_file = Path(DB_PATH)
+    if db_file.parent != Path("."):
+        db_file.parent.mkdir(parents=True, exist_ok=True)
+    if not SCHEMA_PATH.exists():
+        raise RuntimeError(f"Consent schema not found: {SCHEMA_PATH}")
+
+    with _db() as conn:
+        conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
+
+
+@app.on_event("startup")
+def startup() -> None:
+    _ensure_db()
 
 
 def evaluate_consent(principal_id: str, purpose: str) -> ConsentDecision:

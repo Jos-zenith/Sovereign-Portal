@@ -4,6 +4,10 @@ const threatPill = document.getElementById('threat-pill');
 const trustScore = document.getElementById('trust-score');
 const consentResult = document.getElementById('consent-result');
 const auditFeed = document.getElementById('audit-feed');
+const invokeResult = document.getElementById('invoke-result');
+const hbAllow = document.getElementById('hb-allow');
+const hbDeny = document.getElementById('hb-deny');
+const hbTotal = document.getElementById('hb-total');
 
 const API_BASE = 'http://127.0.0.1:8080';
 const DEMO_PRINCIPAL = 'citizen-001';
@@ -36,14 +40,26 @@ async function refreshAuditFeed() {
 
     if (!events.length) {
       auditFeed.innerHTML = '<p>No audit events yet for this session.</p>';
+      hbAllow.textContent = '0';
+      hbDeny.textContent = '0';
+      hbTotal.textContent = '0';
       return;
     }
 
+    const allowCount = events.filter((event) => event.decision === 'allow').length;
+    const denyCount = events.filter((event) => event.decision === 'deny').length;
+    hbAllow.textContent = String(allowCount);
+    hbDeny.textContent = String(denyCount);
+    hbTotal.textContent = String(events.length);
+
     auditFeed.innerHTML = events
-      .map((event) => `<p>#${event.id} principal=${event.principal_id} purpose=${event.purpose} decision=${event.decision} reason=${event.reason} at=${event.recorded_at}</p>`)
+      .map((event) => `<p class="${event.decision}">#${event.id} principal=${event.principal_id} purpose=${event.purpose} decision=${event.decision} reason=${event.reason} at=${event.recorded_at}</p>`)
       .join('');
   } catch (error) {
     auditFeed.innerHTML = '<p>Gateway not reachable. Start FastAPI on :8080 for live feed.</p>';
+    hbAllow.textContent = '-';
+    hbDeny.textContent = '-';
+    hbTotal.textContent = '-';
   }
 }
 
@@ -58,6 +74,33 @@ roleButtons.forEach((btn) => {
 
 document.getElementById('simulate-fix').addEventListener('click', () => {
   alert('VICT Co-pilot applied policy patch suggestions and generated least-privilege IAM diff.');
+});
+
+document.getElementById('invoke-demo').addEventListener('click', async () => {
+  try {
+    const tokenRes = await fetch(`${API_BASE}/identity/token/${DEMO_PRINCIPAL}`);
+    if (!tokenRes.ok) {
+      throw new Error('Failed to fetch identity token');
+    }
+    const tokenData = await tokenRes.json();
+
+    const response = await postJson('/invoke', {
+      principal_id: DEMO_PRINCIPAL,
+      purpose: DEMO_PURPOSE,
+      data_classification: 'personal',
+      auth_method: 'passkey',
+      assertion_token: tokenData.assertion_token,
+      payload: { aadhaar: 'XXXX-XXXX-1234', amount: 5000 },
+    });
+
+    invokeResult.textContent = `ALLOWED - ${JSON.stringify(response.result)}`;
+    invokeResult.style.color = '#3de489';
+  } catch (error) {
+    invokeResult.textContent = `BLOCKED - ${error.message}`;
+    invokeResult.style.color = '#ff7667';
+  }
+
+  await refreshAuditFeed();
 });
 
 document.getElementById('kill-switch').addEventListener('click', () => {

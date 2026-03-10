@@ -18,7 +18,7 @@
 
 body {
   margin: 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "IBM Plex Mono", monospace;
   color: var(--text);
   background: radial-gradient(circle at 15% 20%, #113126 0%, transparent 35%),
               radial-gradient(circle at 80% 10%, #122c43 0%, transparent 30%),
@@ -75,7 +75,7 @@ main {
 }
 
 h1, h2, h3, h4 {
-  font-family: "Chakra Petch", sans-serif;
+  font-family: "Syne", sans-serif;
   margin: 0;
 }
 
@@ -172,7 +172,7 @@ main {
   padding: 0.9rem;
   background: #060a0d;
   border: 1px solid #18303d;
-  font-family: Consolas, monospace;
+  font-family: "IBM Plex Mono", monospace;
   font-size: 0.82rem;
 }
 
@@ -241,12 +241,16 @@ main {
 
 .heartbeat {
   margin-top: 1rem;
-  height: 56px;
+  min-height: 66px;
   border: 1px solid #1d3445;
   border-radius: 10px;
   background: linear-gradient(180deg, #08131b, #050a0f);
   position: relative;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0.6rem;
 }
 
 .heartbeat::before {
@@ -258,26 +262,43 @@ main {
   animation: sweep 2.8s linear infinite;
 }
 
+.hb-stat {
+  border: 1px solid #1f394d;
+  border-radius: 8px;
+  background: rgba(2, 20, 31, 0.75);
+  padding: 0.35rem 0.5rem;
+}
+
+.hb-stat span {
+  display: block;
+  font-size: 0.7rem;
+  color: #8ba9c0;
+}
+
+.hb-stat strong {
+  font-size: 1rem;
+}
+
 .india-map {
   margin-top: 0.8rem;
   width: 100%;
   height: auto;
-  background: #0a0e13;
+  background: radial-gradient(circle at 20% 30%, #0d1822, #080e14 70%);
   border: 1px solid #2a353f;
   border-radius: 10px;
   padding: 0.6rem;
 }
 
 .india-map path {
-  fill: #111e27;
-  stroke: #3f738f;
+  fill: #10202a;
+  stroke: #4f8cad;
   stroke-width: 2;
 }
 
 .india-map text {
   fill: #9dc2da;
   font-size: 12px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 .city.safe {
@@ -290,7 +311,7 @@ main {
 
 .trace {
   margin-top: 0.8rem;
-  font-family: Consolas, monospace;
+  font-family: "IBM Plex Mono", monospace;
   font-size: 0.82rem;
   background: #060a0d;
   border: 1px solid #1d2d39;
@@ -300,6 +321,18 @@ main {
 
 .trace p {
   margin: 0.3rem 0;
+  padding: 0.35rem 0.45rem;
+  border-radius: 6px;
+}
+
+.trace p.allow {
+  color: #89f0bb;
+  background: rgba(31, 92, 63, 0.22);
+}
+
+.trace p.deny {
+  color: #ff958a;
+  background: rgba(121, 36, 44, 0.25);
 }
 
 .mobile-card {
@@ -339,6 +372,7 @@ main {
 .result {
   margin-top: 0.8rem;
   font-weight: 600;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 @keyframes sweep {
@@ -359,6 +393,10 @@ main {
   }
 
   .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .heartbeat {
     grid-template-columns: 1fr;
   }
 

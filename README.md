@@ -71,14 +71,11 @@ See [docs/COMPETITION_POSITIONING.md](docs/COMPETITION_POSITIONING.md) for techn
 
 ```bash
 python -m pip install -r src/requirements.txt
+set VICT_DEMO_SKIP_WASM=true
 uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port 8080
 ```
 
-Initialize local consent schema (dev only):
-
-```bash
-sqlite3 /opt/vict/consent-db/consent.db < compliance/consent_schema.sql
-```
+The consent database is auto-initialized on startup (default path: `vict-consent.db`).
 
 ## Unified Sovereign Portal (Demo)
 
@@ -97,20 +94,16 @@ python src/vict_cli.py deploy --region ap-south-1 --workspace .
 
 ## Live Consent + Audit Demo
 
-1. Initialize consent DB:
+1. Start gateway:
 
 ```bash
-sqlite3 /opt/vict/consent-db/consent.db < compliance/consent_schema.sql
-```
-
-2. Start gateway:
-
-```bash
+set VICT_DEMO_SKIP_WASM=true
 uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port 8080
 ```
 
-3. Open `demo/portal/index.html` and use Citizen "Agree" / "Deny".
-4. Switch to Auditor panel to see live `/audit/recent` updates.
+2. Open `demo/portal/index.html` and use Citizen "Agree" / "Deny".
+3. In Developer panel, click `Run Function Demo` to see ALLOWED/BLOCKED runtime result.
+4. Switch to Auditor panel to see live `/audit/recent` updates and heartbeat counters.
 
 PowerShell one-shot demo:
 
