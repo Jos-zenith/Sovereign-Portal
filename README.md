@@ -97,6 +97,9 @@ Open `demo/portal/index.html` in a browser to view the three-role interface:
 4. Copy your Render URL, for example:
    - `https://vict-sovereign-faas-api.onrender.com`
 
+Note:
+- The repo pins Python via `runtime.txt` (`python-3.11.10`) to avoid `pydantic-core` build failures on unsupported preview runtimes.
+
 Then update frontend API config in `demo/portal/index.html`:
 
 ```html
