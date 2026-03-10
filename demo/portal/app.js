@@ -8,6 +8,7 @@ const invokeResult = document.getElementById('invoke-result');
 const hbAllow = document.getElementById('hb-allow');
 const hbDeny = document.getElementById('hb-deny');
 const hbTotal = document.getElementById('hb-total');
+const breachBanner = document.getElementById('breach-banner');
 
 const API_BASE = 'http://127.0.0.1:8080';
 const DEMO_PRINCIPAL = 'citizen-001';
@@ -98,6 +99,37 @@ document.getElementById('invoke-demo').addEventListener('click', async () => {
   } catch (error) {
     invokeResult.textContent = `BLOCKED - ${error.message}`;
     invokeResult.style.color = '#ff7667';
+  }
+
+  await refreshAuditFeed();
+});
+
+document.getElementById('simulate-breach').addEventListener('click', async () => {
+  breachBanner.classList.remove('show');
+  try {
+    const tokenRes = await fetch(`${API_BASE}/identity/token/${DEMO_PRINCIPAL}`);
+    if (!tokenRes.ok) {
+      throw new Error('Failed to fetch identity token');
+    }
+    const tokenData = await tokenRes.json();
+
+    await postJson('/invoke', {
+      principal_id: DEMO_PRINCIPAL,
+      purpose: DEMO_PURPOSE,
+      data_classification: 'payment',
+      auth_method: 'passkey',
+      assertion_token: tokenData.assertion_token,
+      egress_region: 'us-east-1',
+      payload: { account_ref: 'masked-acct', amount: 5000 },
+    });
+
+    invokeResult.textContent = 'Unexpected allow: localization guardrail did not trigger';
+    invokeResult.style.color = '#ff7667';
+  } catch (error) {
+    invokeResult.textContent = `BLOCKED - ${error.message}`;
+    invokeResult.style.color = '#ff7667';
+    breachBanner.classList.add('show');
+    setTimeout(() => breachBanner.classList.remove('show'), 2200);
   }
 
   await refreshAuditFeed();

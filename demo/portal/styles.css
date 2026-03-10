@@ -343,6 +343,31 @@ main {
   border-color: #a12e3c;
 }
 
+.breach-banner {
+  margin-top: 0.8rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #8b1c29;
+  background: #31060d;
+  color: #ff8a9a;
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.breach-banner.show {
+  opacity: 1;
+  transform: translateY(0);
+  animation: breachFlash 300ms steps(2, end) 5;
+}
+
+@keyframes breachFlash {
+  0% { background: #4a0711; color: #ffd5da; }
+  100% { background: #200309; color: #ff7a8b; }
+}
+
 .metric-grid {
   margin-top: 0.7rem;
   display: grid;

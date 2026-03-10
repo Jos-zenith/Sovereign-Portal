@@ -39,7 +39,19 @@ Expected:
 - `BLOCKED` result (red) in invoke output.
 - Auditor feed logs `deny` with `consent-record-not-found`.
 
-## Minute 4: Runtime Allow (After Consent)
+## Minute 4: Visual RBI Localization Breach (Judge-visible)
+
+In portal:
+
+1. Stay in `Developer Co-pilot`.
+2. Click `Simulate US Egress Breach`.
+
+Expected:
+- Red flashing banner: `[ACCESS DENIED: RBI LOCALIZATION BREACH]`.
+- Invoke output shows `BLOCKED` with localization breach detail.
+- This demonstrates guardrail behavior judges can see instantly.
+
+## Minute 5: Runtime Allow (After Consent)
 
 In portal:
 
@@ -52,7 +64,7 @@ Expected:
 - Auditor feed logs `allow` with `consent-valid`.
 - Compliance Heartbeat counters update.
 
-## Minute 5: Auditor Control + Close
+## Minute 6: Auditor Control + Close
 
 In `Auditor Command`:
 
@@ -63,6 +75,11 @@ In `Auditor Command`:
 Close with:
 
 "This is sovereignty as runtime behavior: identity, consent, and localization enforced on each invocation, with immutable forensic evidence."
+
+## Guardrail Engine Note (Hackathon Scope)
+
+Use Falco or Tetragon rule packs as the eBPF base, not raw kernel programs.
+The project includes rule-first scaffolding in `src/monitor/ebpf_forensics.py`.
 
 ## Backup Commands
 

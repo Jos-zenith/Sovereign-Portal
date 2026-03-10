@@ -24,7 +24,7 @@ Secure Data Layer (India region)
 
 1. **Consent Gateway** (`src/gateway/`) - Consent-aware API entry point
 2. **VICT Runtime** (`src/runtime/`) - WebAssembly sandbox for function isolation
-3. **Compliance Monitor** (`src/monitor/`) - eBPF-based observability & enforcement
+3. **Compliance Monitor** (`src/monitor/`) - Falco/Tetragon rule-first eBPF observability & enforcement
 4. **Sovereignty Layer** (`compliance/`) - DPDP & RBI compliance logic
 5. **Deployment Stack** (`infra/`) - Infrastructure-as-Code for sovereign deployment
 
@@ -104,6 +104,13 @@ uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port 8080
 2. Open `demo/portal/index.html` and use Citizen "Agree" / "Deny".
 3. In Developer panel, click `Run Function Demo` to see ALLOWED/BLOCKED runtime result.
 4. Switch to Auditor panel to see live `/audit/recent` updates and heartbeat counters.
+5. In Developer panel, click `Simulate US Egress Breach` to trigger a visible red RBI localization denial banner.
+
+## Hackathon MVP Scope (Hardened PoC)
+
+1. **Level 1 - Identity**: API gateway checks consent table before processing personal/payment data.
+2. **Level 2 - Vault/Runtime**: Wasm-based function execution path with minimal capabilities.
+3. **Level 3 - Guardrail**: One localization rule blocks non-India egress and emits judge-visible denial.
 
 PowerShell one-shot demo:
 

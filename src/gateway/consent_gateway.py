@@ -49,6 +49,10 @@ class InvocationRequest(BaseModel):
     auth_method: str = Field(..., description="passkey, mobile-otp, biometric")
     assertion_token: str = Field(..., min_length=12)
     biometric_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    egress_region: str | None = Field(
+        default=None,
+        description="Optional destination region for outbound call simulation, e.g. ap-south-1 or us-east-1",
+    )
     payload: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -188,13 +192,18 @@ def invoke(req: InvocationRequest) -> dict[str, Any]:
         if not decision.allowed:
             raise HTTPException(status_code=403, detail=f"Invocation blocked: {decision.reason}")
 
+    effective_region = req.egress_region or VICT_REGION
+
     if not evaluate_sovereignty_policy(
-        region=VICT_REGION,
+        region=effective_region,
         data_classification=req.data_classification,
         consent_allowed=True,
         purpose=req.purpose,
     ):
-        raise HTTPException(status_code=403, detail="Invocation blocked: sovereignty-policy-deny")
+        raise HTTPException(
+            status_code=403,
+            detail=f"[ACCESS DENIED: RBI LOCALIZATION BREACH] Destination region '{effective_region}' is outside India-approved zones",
+        )
 
     if DEMO_SKIP_WASM:
         result = {
