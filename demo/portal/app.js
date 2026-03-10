@@ -187,6 +187,15 @@ async function postJson(path, body) {
     throw new Error(detail || `HTTP ${response.status}`);
   }
 
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const bodyText = await response.text();
+    if (bodyText.startsWith('<!DOCTYPE') || bodyText.startsWith('<html')) {
+      throw new Error('API returned HTML instead of JSON. Check vict-api-base Render URL configuration.');
+    }
+    throw new Error('API returned a non-JSON response.');
+  }
+
   return response.json();
 }
 
@@ -199,6 +208,11 @@ async function refreshAuditFeed() {
     const response = await fetch(`${API_BASE}/audit/recent?limit=10`);
     if (!response.ok) {
       throw new Error('audit endpoint unavailable');
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Audit API returned non-JSON response.');
     }
 
     const payload = await response.json();
