@@ -99,6 +99,7 @@ Open `demo/portal/index.html` in a browser to view the three-role interface:
 
 Note:
 - The repo pins Python via `runtime.txt` (`python-3.11.10`) to avoid `pydantic-core` build failures on unsupported preview runtimes.
+- If Render still builds with `python3.14`, set `PYTHON_VERSION=3.11.10` in Render Environment, then redeploy with "Clear build cache".
 
 Then update frontend API config in `demo/portal/index.html`:
 

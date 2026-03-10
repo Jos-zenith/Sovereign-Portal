@@ -8,6 +8,8 @@ services:
     autoDeploy: true
     healthCheckPath: /healthz
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
       - key: VICT_DEMO_SKIP_WASM
         value: true
       - key: VICT_REGION
