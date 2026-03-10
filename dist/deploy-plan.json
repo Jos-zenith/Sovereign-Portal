@@ -1,0 +1,6 @@
+{
+  "region": "ap-south-1",
+  "policy": "compliance/generated_iam_policy.json",
+  "runtime": "wasm",
+  "sovereignty": "india-only"
+}

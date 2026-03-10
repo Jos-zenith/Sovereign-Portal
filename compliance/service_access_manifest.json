@@ -1,0 +1,19 @@
+{
+  "access": [
+    {
+      "name": "consent-read",
+      "capabilities": ["dynamodb.read"],
+      "resources": [
+        "arn:aws:dynamodb:ap-south-1:123456789012:table/vict-consent"
+      ]
+    },
+    {
+      "name": "forensic-evidence-write",
+      "capabilities": ["s3.write", "kms.decrypt"],
+      "resources": [
+        "arn:aws:s3:::vict-evidence-*/*",
+        "arn:aws:kms:ap-south-1:123456789012:key/example"
+      ]
+    }
+  ]
+}

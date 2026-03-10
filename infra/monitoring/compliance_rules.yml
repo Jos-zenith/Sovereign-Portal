@@ -1,0 +1,105 @@
+# Prometheus Recording Rules for VICT Compliance
+
+groups:
+  - name: vict_compliance_metrics
+    interval: 30s
+    rules:
+      # Data Sovereignty: Cross-border attempts (should be 0)
+      - record: vict:cross_border_attempts:total
+        expr: sum(rate(vict_network_cross_border_blocked[5m]))
+        labels:
+          severity: critical
+          compliance: dpdp_sec_16
+
+      # Consent Validation Rate
+      - record: vict:consent_validation:success_rate
+        expr: |
+          sum(rate(vict_consent_validated_total{status="success"}[5m]))
+          /
+          sum(rate(vict_consent_validated_total[5m]))
+        labels:
+          compliance: dpdp_sec_6
+
+      # Purpose Limitation Violations
+      - record: vict:purpose_limitation:violations
+        expr: sum(rate(vict_consent_purpose_mismatch[5m]))
+        labels:
+          severity: high
+          compliance: dpdp_sec_6
+
+      # Runtime Isolation Breaches
+      - record: vict:wasm_isolation:breaches
+        expr: sum(rate(vict_wasm_sandbox_escape_attempts[5m]))
+        labels:
+          severity: critical
+
+      # Average Function Execution Time
+      - record: vict:runtime:avg_execution_ms
+        expr: |
+          sum(rate(vict_wasm_execution_duration_ms_sum[5m]))
+          /
+          sum(rate(vict_wasm_execution_duration_ms_count[5m]))
+
+      # eBPF Probe Overhead
+      - record: vict:ebpf:cpu_overhead_percent
+        expr: |
+          100 * (
+            sum(rate(process_cpu_seconds_total{job="vict-ebpf-monitor"}[5m]))
+            /
+            sum(rate(node_cpu_seconds_total{mode!="idle"}[5m]))
+          )
+
+  - name: vict_compliance_alerts
+    interval: 30s
+    rules:
+      # ALERT: Cross-border data attempt detected
+      - alert: CrossBorderDataAttempt
+        expr: vict:cross_border_attempts:total > 0
+        for: 1m
+        labels:
+          severity: critical
+          compliance: dpdp_rbi
+        annotations:
+          summary: "Cross-border data transfer attempt detected"
+          description: "{{ $value }} cross-border network calls blocked in last 5 minutes"
+
+      # ALERT: Consent validation failure spike
+      - alert: ConsentValidationFailureSpike
+        expr: vict:consent_validation:success_rate < 0.95
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High consent validation failure rate"
+          description: "Consent validation success rate is {{ $value | humanizePercentage }}"
+
+      # ALERT: Sandbox escape attempt
+      - alert: WasmSandboxEscapeAttempt
+        expr: vict:wasm_isolation:breaches > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Wasm sandbox escape attempt detected"
+          description: "Security breach attempt in Wasm runtime"
+
+      # ALERT: High eBPF overhead
+      - alert: HighEbpfOverhead
+        expr: vict:ebpf:cpu_overhead_percent > 5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "eBPF monitoring overhead exceeds 5%"
+          description: "eBPF probes consuming {{ $value | humanizePercentage }} CPU"
+
+      # ALERT: Breach-reporting timer started (must complete in 72h)
+      - alert: DpdpBreachReportingWindow
+        expr: increase(vict_breach_incidents_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          compliance: dpdp_72h_reporting
+        annotations:
+          summary: "DPDP breach reporting window initiated"
+          description: "A new breach incident was detected. Forensic report and disclosure must complete within 72 hours."

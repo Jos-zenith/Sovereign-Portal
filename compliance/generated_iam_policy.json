@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowConsentread",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:Query"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:ap-south-1:123456789012:table/vict-consent"
+      ]
+    },
+    {
+      "Sid": "AllowForensicevidencewrite",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::vict-evidence-*/*",
+        "arn:aws:kms:ap-south-1:123456789012:key/example"
+      ]
+    }
+  ]
+}

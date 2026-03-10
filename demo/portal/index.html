@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VICT Sovereign Security OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <header class="topbar">
+    <div class="logo-wrap">
+      <span class="logo-dot"></span>
+      <div>
+        <p class="kicker">Validated Identity & Compliance Trust-layer</p>
+        <h1>VICT Sovereign Security OS</h1>
+      </div>
+    </div>
+    <div class="status-pills">
+      <span class="pill green">DPDP: Enforced</span>
+      <span class="pill blue">RBI: Localized</span>
+      <span class="pill amber" id="threat-pill">Threat Level: Guarded</span>
+    </div>
+  </header>
+
+  <nav class="role-nav">
+    <button class="role-btn active" data-role="developer">Developer Co-pilot</button>
+    <button class="role-btn" data-role="auditor">Auditor Command</button>
+    <button class="role-btn" data-role="citizen">Citizen Consent Vault</button>
+  </nav>
+
+  <main>
+    <section class="panel active" id="developer">
+      <div class="panel-grid">
+        <article class="card">
+          <h2>Build-Time Security Co-pilot</h2>
+          <p>Run secure-by-default commands directly in your terminal workflow.</p>
+          <div class="terminal">
+            <p><span>$</span> vict scan src/functions/payment.py</p>
+            <p class="warn">Warning: Data localization violation on line 42 (`api.us-east-1.example.com`).</p>
+            <p><span>$</span> vict wrap src/functions/payment.py --target ap-south-1</p>
+            <p class="ok">Wrapped as Wasm package: dist/payment.wasm.stub</p>
+            <p><span>$</span> vict deploy --region ap-south-1</p>
+            <p class="ok">Least-privilege IAM policy generated and deployment plan created.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>IDE Signal Feed</h2>
+          <ul class="issues">
+            <li><strong>Line 42</strong> Non-India endpoint detected for PII payload.</li>
+            <li><strong>Line 78</strong> Wildcard IAM action (`s3:*`) should be narrowed.</li>
+            <li><strong>Line 120</strong> Missing consent check before payment event publish.</li>
+          </ul>
+          <button class="action" id="simulate-fix">Auto-fix Policy Suggestions</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="auditor">
+      <div class="panel-grid">
+        <article class="card">
+          <h2>Compliance Heartbeat</h2>
+          <div class="metric-grid">
+            <div class="metric">
+              <p>Trust Score</p>
+              <h3 id="trust-score">98.7</h3>
+            </div>
+            <div class="metric">
+              <p>DPDP Checks</p>
+              <h3>Passing</h3>
+            </div>
+            <div class="metric">
+              <p>RBI Localization</p>
+              <h3>India Only</h3>
+            </div>
+          </div>
+          <div class="heartbeat" id="heartbeat"></div>
+        </article>
+
+        <article class="card">
+          <h2>Live Threat Map: India</h2>
+          <svg class="india-map" viewBox="0 0 420 320" aria-label="India data processing map">
+            <path d="M84 35 L137 44 L185 65 L202 102 L221 120 L243 153 L275 162 L301 189 L286 228 L241 256 L201 283 L153 260 L121 224 L112 183 L88 143 L62 106 L74 78 Z"></path>
+            <circle class="city safe" cx="120" cy="95" r="7"></circle>
+            <text x="132" y="98">Delhi</text>
+            <circle class="city safe" cx="152" cy="174" r="7"></circle>
+            <text x="164" y="178">Mumbai</text>
+            <circle class="city safe" cx="180" cy="210" r="7"></circle>
+            <text x="192" y="214">Hyderabad</text>
+            <circle class="city alert" cx="330" cy="60" r="7"></circle>
+            <text x="342" y="64">Blocked: Outside India</text>
+          </svg>
+          <button class="danger" id="kill-switch">Revoke RBI Compliance (Kill-Switch Demo)</button>
+        </article>
+      </div>
+      <article class="card full">
+        <h2>Forensic Drill-Down</h2>
+        <div class="trace">
+          <p>event_id=evt-9912 source=eBPF action=connect()</p>
+          <p>function=payments.calculate_gst line=42 decision=blocked reason=egress-domain-policy</p>
+          <p>artifact=immutable://vict-evidence/2026-03-10/evt-9912.json retention=30d</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel" id="citizen">
+      <article class="card full mobile-card">
+        <h2>Consent Vault</h2>
+        <p class="simple">You control every data permission. Revoke anytime with one tap.</p>
+        <div class="consent-list">
+          <div class="consent-item">
+            <div>
+              <h4>Location for GST Calculation</h4>
+              <p>Granted to: FintechTax App</p>
+            </div>
+            <button class="action revoke">One-Click Revoke</button>
+          </div>
+          <div class="consent-item">
+            <div>
+              <h4>UPI Transaction Metadata</h4>
+              <p>Granted to: SmartLedger</p>
+            </div>
+            <button class="action revoke">One-Click Revoke</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card full">
+        <h2>Contextual Consent Popup Demo</h2>
+        <p class="simple">"This function needs your location to calculate GST. Do you agree?"</p>
+        <div class="popup-actions">
+          <button class="action" id="agree">Agree</button>
+          <button class="danger" id="deny">Deny</button>
+        </div>
+        <p id="consent-result" class="result">Waiting for user response...</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

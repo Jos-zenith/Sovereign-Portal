@@ -1,0 +1,5 @@
+{
+  "source": "demo\\sample_function.py",
+  "runtime": "wasi",
+  "note": "Stub artifact. Replace with real toolchain for production."
+}

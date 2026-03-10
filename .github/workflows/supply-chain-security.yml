@@ -1,0 +1,36 @@
+name: supply-chain-security
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  sca-and-sign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy file scan (SCA)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+
+      - name: Generate artifact digest
+        run: |
+          tar -czf vict-source.tar.gz src compliance infra docs
+          sha256sum vict-source.tar.gz > vict-source.sha256
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      - name: Sign digest with keyless Sigstore
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          cosign sign-blob --yes vict-source.sha256

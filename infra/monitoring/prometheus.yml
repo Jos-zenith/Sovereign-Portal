@@ -1,0 +1,64 @@
+# Prometheus Configuration for VICT Monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'vict-sovereign-faas'
+    region: 'ap-south-1'
+    compliance: 'dpdp-rbi'
+
+# Alert manager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Scrape configurations
+scrape_configs:
+  # VICT Gateway Metrics
+  - job_name: 'vict-gateway'
+    static_configs:
+      - targets: ['localhost:8081']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'vict_consent_.*'
+        action: keep
+
+  # VICT Wasm Runtime Metrics
+  - job_name: 'vict-runtime'
+    static_configs:
+      - targets: ['localhost:8082']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'vict_wasm_.*'
+        action: keep
+
+  # eBPF Compliance Monitor
+  - job_name: 'vict-ebpf-monitor'
+    static_configs:
+      - targets: ['localhost:8083']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'vict_network_.*|vict_syscall_.*'
+        action: keep
+
+  # System metrics (node_exporter)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  # PostgreSQL (Consent DB)
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['localhost:9187']
+
+# Recording rules for compliance metrics
+rule_files:
+  - 'compliance_rules.yml'
