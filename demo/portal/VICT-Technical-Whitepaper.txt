@@ -1,0 +1,25 @@
+VICT Technical Whitepaper (Research Digest)
+
+Title: Sovereign Serverless Security for India's Digital Frontier
+
+Abstract
+VICT (Validated Identity & Compliance Trust-layer) is a sovereign execution platform for serverless workloads handling personal and payment data. It enforces consent and policy checks before execution, constrains runtime behavior with capability-oriented Wasm isolation, applies eBPF-based kernel visibility for real-time policy enforcement, and emits forensic evidence for breach reporting obligations.
+
+Core Model
+1. Identity Bridge validates caller assurance level.
+2. Consent Gateway enforces DPDP consent and purpose checks per invocation.
+3. Sovereignty policy blocks non-India data paths.
+4. Wasm runtime executes in least-privilege mode.
+5. eBPF monitor captures syscall/network traces to immutable evidence storage.
+
+Why It Matters
+- Pre-execution blocking reduces compliance blast radius.
+- India-region geofencing aligns with RBI localization expectations.
+- Continuous audit artifacts reduce manual compliance overhead.
+
+Implementation Notes
+- Demo mode uses deterministic token and skip-wasm flag for reliable stage presentations.
+- Production mode should integrate full WebAuthn, signed artifacts, and OPA in strict mode.
+
+Keywords
+DPDP, RBI Localization, eBPF, WebAssembly, Zero Trust, Sovereign Cloud

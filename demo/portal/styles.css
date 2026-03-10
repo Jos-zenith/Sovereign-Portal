@@ -1,15 +1,16 @@
 :root {
-  --bg: #050708;
+  --bg: #0d0d0d;
   --bg-alt: #0b1114;
   --panel: #10181d;
   --line: #1d2a32;
   --text: #dce6ed;
   --muted: #92a6b5;
-  --green: #3de489;
+  --green: #00ff41;
   --green-soft: #173a2a;
   --blue: #4da8ff;
   --blue-soft: #12283d;
   --amber: #f5b14b;
+  --red: #ff3131;
 }
 
 * {
@@ -20,10 +21,19 @@ body {
   margin: 0;
   font-family: "IBM Plex Mono", monospace;
   color: var(--text);
-  background: radial-gradient(circle at 15% 20%, #113126 0%, transparent 35%),
-              radial-gradient(circle at 80% 10%, #122c43 0%, transparent 30%),
+  background: radial-gradient(circle at 15% 20%, #07311b 0%, transparent 35%),
+              radial-gradient(circle at 80% 10%, #1c232b 0%, transparent 30%),
               var(--bg);
   min-height: 100vh;
+}
+
+.hero,
+.statement,
+.feature-grid,
+.split-demo,
+.dx {
+  position: relative;
+  z-index: 1;
 }
 
 .bg-grid {
@@ -136,6 +146,122 @@ main {
   padding: 1.2rem 2rem 2.2rem;
 }
 
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1rem;
+  padding: 1.2rem 2rem 0.4rem;
+}
+
+.hero h2 {
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.hero-sub {
+  margin-top: 0.7rem;
+  max-width: 62ch;
+}
+
+.hero-actions {
+  margin-top: 1rem;
+}
+
+.cta {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.diagram {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(7, auto);
+  gap: 0.45rem;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.node {
+  border: 1px solid #31424e;
+  border-radius: 8px;
+  background: #0b1319;
+  padding: 0.4rem 0.55rem;
+  white-space: nowrap;
+}
+
+.node.focus {
+  border-color: #2e8f5e;
+  box-shadow: 0 0 0 1px rgba(0, 255, 65, 0.35) inset;
+}
+
+.arrow {
+  color: #86a8bf;
+}
+
+.statement {
+  margin: 1rem 2rem;
+}
+
+.feature-grid {
+  margin: 0 2rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.feature h3 {
+  font-size: 1.05rem;
+}
+
+.edge-table {
+  margin-top: 0.8rem;
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.edge-table th,
+.edge-table td {
+  border: 1px solid #253541;
+  padding: 0.55rem;
+  text-align: left;
+}
+
+.edge-table th {
+  background: #121d24;
+}
+
+.split-demo {
+  margin-top: 1rem;
+}
+
+.split-grid {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.terminal.bad {
+  border-color: #6a2525;
+}
+
+.terminal.good {
+  border-color: #205f3d;
+}
+
+.map-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.map-legend strong {
+  color: var(--text);
+}
+
 .panel {
   display: none;
   animation: rise 260ms ease;
@@ -212,8 +338,9 @@ main {
 }
 
 .danger {
-  background: linear-gradient(180deg, #632027, #4a161d);
+  background: linear-gradient(180deg, #752129, #570d16);
   color: #ffe1e4;
+  border-color: #a12e3c;
 }
 
 .metric-grid {
@@ -306,7 +433,7 @@ main {
 }
 
 .city.alert {
-  fill: #ff7667;
+  fill: var(--red);
 }
 
 .trace {
@@ -392,7 +519,24 @@ main {
     padding-right: 1rem;
   }
 
+  .hero {
+    grid-template-columns: 1fr;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .statement,
+  .feature-grid {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
   .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .split-grid,
+  .map-wrap {
     grid-template-columns: 1fr;
   }
 

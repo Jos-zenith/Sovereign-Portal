@@ -16,6 +16,10 @@
       "dest": "demo/portal/app.js"
     },
     {
+      "src": "/VICT-Technical-Whitepaper.txt",
+      "dest": "demo/portal/VICT-Technical-Whitepaper.txt"
+    },
+    {
       "src": "/(.*)",
       "dest": "demo/portal/index.html"
     }
