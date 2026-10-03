@@ -10,7 +10,7 @@ Three proposals for moving VICT from demo to production, what was built for each
 
 ## 1. Infrastructure enforcement
 
-Calls from app code can only leave through the proxy because the network gives them no other way out:
+Calls from app code can only leave through the proxy, apart from DNS lookups (see the known gap below), because the network gives them no other path:
 
 1. **Route table.** App subnets get one with only the local VPC route: no internet gateway, no NAT.
 2. **Network ACL.** App subnets may only exchange traffic with the VPC's own range.
@@ -64,6 +64,14 @@ python -m src.egress.witness --lsp-url https://vict.lsp.example.in --lsp-id lsp-
 - **Withdrawal closes open tunnels.** The proxy tracks open tunnels by LSP, borrower and purpose. A revocation closes the matching tunnels at once, and each closure is logged as `tunnel-closed` with reason `consent-withdrawn`. Before this change, an open tunnel lasted until its token expired, up to 60 seconds. A tunnel is registered before its consent check, so a revocation that arrives between the check and the relay still closes it.
 - **No audit record, no tunnel.** The `egress-allowed` record is written before the client gets its `200`. If the write fails, the client gets `500 proxy-error`, and both the client and upstream sockets are closed.
 - **Limit: the proxy hears about revocations in-process.** That is enough while the consent store runs inside the proxy. Once the consent authority becomes its own service, it must push revocations to the proxy, for example over Postgres `LISTEN/NOTIFY`. Until then, an out-of-process revocation reaches open tunnels only when their token expires.
+
+## 5. Adversarial lockdown probes and AWS endpoints
+
+`verify_lockdown.sh` now tries every exit it knows of and records the outcome in a JSON report: direct HTTPS, raw IPv4 and IPv6, plain HTTP, raw TCP, UDP DNS to an outside resolver, external names through the VPC resolver, the proxy with no token or a forged one, another account's S3 bucket and SQS queue, and internal relays. A refusal or reset counts as a path out, because the packet got there. On a machine without the lockdown it correctly reports every direct path as FAIL.
+
+The module can now create the S3 gateway endpoint and interface endpoints itself, each with an own-account policy. The old advice to add endpoints by hand would have let app code write to another account's bucket once someone loosened the network ACL to make S3 work.
+
+What happens on withdrawal, expiry and outages is specified in [REVOCATION_SEMANTICS.md](REVOCATION_SEMANTICS.md), with the open product decisions listed.
 
 ## Still needed before production
 

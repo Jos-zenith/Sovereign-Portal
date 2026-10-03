@@ -100,7 +100,7 @@ python -m pytest tests/egress -q</code></pre>
           <span class="step-n">3</span>
           <div>
             <h3>Lock down the network</h3>
-            <p>Apply the <code>egress_lockdown</code> Terraform module to your app subnets, then run <code>verify_lockdown.sh</code> on an app instance. Direct HTTPS, raw-IP and plain HTTP must all fail, and the proxy must ask for a token.</p>
+            <p>Apply the <code>egress_lockdown</code> Terraform module to your app subnets, then run <code>verify_lockdown.sh</code> on an app instance. It doesn't read your configuration: it tries to get data out over HTTPS, raw IPs, IPv6, UDP DNS, another account's S3 bucket or queue, and internal relays, and writes down what actually happened in a JSON report you can hand to your NBFC.</p>
             <p class="small faint">Validated with offline Terraform tests. Not yet applied to a real AWS account.</p>
           </div>
           <div class="code">

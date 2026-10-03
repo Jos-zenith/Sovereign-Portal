@@ -56,6 +56,8 @@
     'consent-record-not-found': 'The borrower never gave consent for this purpose.',
     'consent-withdrawn': 'The borrower withdrew consent.',
     'consent-expired': 'The consent has expired.',
+    'consent-superseded': 'This token was issued under a grant the borrower later withdrew. Granting again creates a new grant, so old tokens stay dead.',
+    'consent-unavailable': "The consent store didn't answer, so the call was refused rather than assumed allowed.",
     'host-not-allow-listed': "This host isn't on the LSP's approved vendor list.",
     'host-not-in-token': 'The consent token names a different host from the one the code tried to reach.',
     'port-not-allowed': 'Only HTTPS on port 443 is allowed.',

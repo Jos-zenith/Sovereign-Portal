@@ -307,7 +307,7 @@
             <span class="stamp stamp-bad">No route</span>
             <code class="slip-code">network lockdown</code>
             <h4>Code skips the proxy entirely</h4>
-            <p>App subnets have no route to the internet except through the proxy. Bypassing the SDK leads nowhere.</p>
+            <p>App subnets have no route to the internet except through the proxy. The one known gap is DNS lookups, until DNS Firewall is on.</p>
             <span class="slip-where">Stopped by: AWS network rules</span>
           </article>
         </div>
@@ -330,7 +330,7 @@
           <div class="card" data-reveal>
             <p class="step-n">2</p>
             <h3>Show the token at the gate</h3>
-            <p class="muted">The egress proxy checks the token, the host and the port, then opens an encrypted tunnel it cannot read. The network leaves no other way out.</p>
+            <p class="muted">The egress proxy checks the token, the host and the port, then opens an encrypted tunnel it cannot read. The network closes the other routes out, except DNS until DNS Firewall is on.</p>
           </div>
           <div class="card" data-reveal>
             <p class="step-n">3</p>

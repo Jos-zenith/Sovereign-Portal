@@ -16,6 +16,7 @@ import tempfile
 import time
 from collections import Counter
 from dataclasses import asdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -81,6 +82,7 @@ class DemoEnvironment:
         self.store = ConsentStore(self.workdir / "egress-consent.db")
         self.key = secrets.token_bytes(32)
         self.authority = ConsentAuthority(self.store, self.key, self.audit, ttl_seconds=60)
+        self.authority.grant(LSP_ID, "borrower-001", "loan-eligibility")
         self.signer = CheckpointSigner.generate(LSP_ID)
         self.witness = Witness(
             lsp_id=LSP_ID,
@@ -94,7 +96,6 @@ class DemoEnvironment:
         self._upstream: asyncio.base_events.Server | None = None
         self.streams: dict[str, dict[str, Any]] = {}
         self._stream_tasks: set[asyncio.Task] = set()
-        self.store.grant(LSP_ID, "borrower-001", "loan-eligibility")
 
     async def start(self) -> None:
         self._upstream = await asyncio.start_server(_echo, "127.0.0.1", 0)
@@ -246,15 +247,16 @@ async def call(req: CallRequest) -> dict[str, Any]:
 @router.post("/consent/grant")
 async def grant(req: ConsentChange) -> dict[str, str]:
     env = await _environment()
-    await asyncio.to_thread(env.store.grant, LSP_ID, req.principal_id, req.purpose)
-    return {"status": "granted"}
+    grant_id = await asyncio.to_thread(env.authority.grant, LSP_ID, req.principal_id, req.purpose)
+    return {"status": "granted", "grant_id": grant_id}
 
 
 @router.post("/consent/revoke")
 async def revoke(req: ConsentChange) -> dict[str, Any]:
     env = await _environment()
-    await asyncio.to_thread(env.store.revoke, LSP_ID, req.principal_id, req.purpose)
-    return {"status": "revoked", "revoked_at": time.time()}
+    withdrawn = await asyncio.to_thread(env.authority.withdraw, LSP_ID, req.principal_id, req.purpose)
+    revoked_at = datetime.fromisoformat(withdrawn["revoked_at"]).timestamp()
+    return {"status": "revoked", "grant_id": withdrawn["grant_id"], "revoked_at": revoked_at}
 
 
 @router.post("/stream")

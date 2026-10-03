@@ -12,7 +12,9 @@ because upstreams that close the connection after each response need a new
 tunnel per request; each new tunnel re-checks consent.
 
 Withdrawing consent also closes the tunnels already open under it, so a
-revocation takes effect at once rather than when the token expires.
+revocation takes effect at once rather than when the token expires. A tunnel
+also closes when its consent's own expiry arrives, if that is before the
+token's. Any close the proxy forces is logged as tunnel-cut.
 """
 
 from __future__ import annotations
@@ -48,6 +50,8 @@ class _Tunnel:
     key: TunnelKey
     tasks: list[asyncio.Task] = field(default_factory=list)
     closed_by: str | None = None
+    deadline: float = 0.0
+    deadline_reason: str = "token-expired"
 
     def close(self, reason: str) -> None:
         self.closed_by = self.closed_by or reason
@@ -199,7 +203,16 @@ class EgressProxy:
         tunnel = self._register(token)
         try:
             self._claim_token(token)
-            consent = await asyncio.to_thread(self._store.check, token.lsp_id, token.principal_id, token.purpose)
+            try:
+                consent = await asyncio.to_thread(self._store.check, token.lsp_id, token.principal_id, token.purpose)
+            except Exception:  # noqa: BLE001 - no answer about consent means no tunnel
+                raise _Rejected(503, "consent-unavailable") from None
+            if consent.valid and token.grant_id != consent.grant_id:
+                # Minted under an earlier grant that was withdrawn; a re-grant doesn't revive it.
+                consent = type(consent)(False, "consent-superseded", consent.grant_id)
+            tunnel.deadline = token.expires_at
+            if consent.expires_at is not None and consent.expires_at < token.expires_at:
+                tunnel.deadline, tunnel.deadline_reason = consent.expires_at, "consent-expired"
             request = {
                 "host": host,
                 "port": port,
@@ -294,16 +307,17 @@ class EgressProxy:
         tunnel.tasks = tasks
         if tunnel.closed_by:  # withdrawn while the 200 was on its way
             tunnel.close(tunnel.closed_by)
-        _, pending = await asyncio.wait(tasks, timeout=max(0.0, token.expires_at - time.time()))
+        _, pending = await asyncio.wait(tasks, timeout=max(0.0, tunnel.deadline - time.time()))
         for task in pending:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
         for stream in (up_writer, writer):
             stream.close()
+        cut_by = tunnel.closed_by or (tunnel.deadline_reason if pending else None)
         await self._log(
-            "tunnel-closed",
+            "tunnel-cut" if cut_by else "tunnel-closed",
             target=target,
-            reason=tunnel.closed_by or ("token-expired" if pending else "closed"),
+            reason=cut_by or "closed",
             bytes_sent=counts["sent"],
             bytes_received=counts["received"],
             **_token_fields(token),
@@ -313,7 +327,7 @@ class EgressProxy:
 def _token_fields(token: tokens.ConsentToken | None) -> dict[str, str]:
     if token is None:
         return {}
-    return {"lsp_id": token.lsp_id, "principal_id": token.principal_id, "purpose": token.purpose}
+    return {"lsp_id": token.lsp_id, "principal_id": token.principal_id, "purpose": token.purpose, "grant_id": token.grant_id}
 
 
 async def _respond(writer: asyncio.StreamWriter, status: int, reason: str) -> None:

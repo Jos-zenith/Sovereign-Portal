@@ -493,9 +493,10 @@
   let topSeq = null;
 
   function eventTone(record) {
-    if (record.event === 'egress-allowed' || record.event === 'token-issued') return 'good';
+    if (['egress-allowed', 'token-issued', 'consent-granted'].includes(record.event)) return 'good';
     if (record.event === 'egress-blocked' || record.event === 'token-denied') return 'bad';
-    if (record.event === 'tunnel-closed' && record.reason === 'consent-withdrawn') return 'warn';
+    if (record.event === 'tunnel-cut' || record.event === 'consent-withdrawn') return 'warn';
+    if (record.event === 'audit-recovered') return 'info';
     return '';
   }
 

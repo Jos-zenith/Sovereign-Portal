@@ -108,12 +108,13 @@ Proxy-Authorization: Basic dmljdDpleUps…   <span class="c"># the consent token
         <article class="step" data-reveal>
           <span class="step-n">3</span>
           <div>
-            <h3>Leave no other way out</h3>
+            <h3>Close the other ways out</h3>
             <p>An SDK that ignores the proxy should find nothing on the other side. A Terraform module gives app subnets three independent layers: a route table with no internet gateway or NAT, a network ACL that only allows traffic inside the VPC, and security groups that only reach the proxy.</p>
             <ul class="checklist">
               <li>Each layer holds on its own, so one permissive security group doesn't reopen a path.</li>
               <li>The proxy gets one fixed IP, which bureaus and AAs can put on their own allow-lists.</li>
               <li>Route tables, ACLs and security groups cost nothing in AWS.</li>
+              <li><strong>One known gap: DNS.</strong> Lookups through the VPC resolver can still carry small amounts of data out until Route 53 Resolver DNS Firewall, a paid service, is on. The probe script reports it every run.</li>
             </ul>
           </div>
           <div class="code">

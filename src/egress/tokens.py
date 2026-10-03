@@ -31,6 +31,7 @@ class ConsentToken:
     hosts: tuple[str, ...]
     expires_at: float
     token_id: str
+    grant_id: str = ""
 
 
 def _b64encode(raw: bytes) -> str:
@@ -54,6 +55,7 @@ def mint(
     hosts: Iterable[str],
     ttl_seconds: float = 60,
     now: float | None = None,
+    grant_id: str = "",
 ) -> str:
     issued_at = time.time() if now is None else now
     claims = {
@@ -63,6 +65,7 @@ def mint(
         "hosts": sorted({h.lower() for h in hosts}),
         "exp": issued_at + ttl_seconds,
         "jti": secrets.token_urlsafe(16),
+        "gid": grant_id,
     }
     body = _b64encode(json.dumps(claims, separators=(",", ":"), sort_keys=True).encode("utf-8"))
     return f"{body}.{_sign(key, body)}"
@@ -85,6 +88,7 @@ def verify(key: bytes, token: str, *, now: float | None = None) -> ConsentToken:
             hosts=tuple(claims["hosts"]),
             expires_at=float(claims["exp"]),
             token_id=str(claims["jti"]),
+            grant_id=str(claims.get("gid", "")),
         )
     except (ValueError, KeyError, TypeError):
         raise TokenError("token-malformed") from None
