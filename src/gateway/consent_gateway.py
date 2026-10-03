@@ -18,6 +18,7 @@ from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from src.egress.demo_api import router as egress_demo_router
 from src.gateway.identity_bridge import build_assertion_token, verify_identity_assertion
 from src.runtime.wasm_runner import WasmRunner
 
@@ -40,6 +41,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(egress_demo_router)
 
 
 class InvocationRequest(BaseModel):

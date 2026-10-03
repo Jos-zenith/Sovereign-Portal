@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How it works · VICT</title>
+  <meta name="description" content="How VICT gates a loan app's outbound calls: consent tokens, a CONNECT-only egress proxy, network lockdown in AWS, and a hash-chained log witnessed by the NBFC." />
+  <meta name="vict-api-base" content="https://sovereign-portal.onrender.com" />
+  <meta name="theme-color" content="#f4efe4" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="logo" href="index.html" aria-label="VICT home">
+        <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+        <span class="logo-word">VICT</span><span class="logo-sub">egress gate</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="how-it-works.html" aria-current="page">How it works</a>
+        <a href="nbfc.html">For NBFCs</a>
+        <a href="regulation.html">RBI &amp; DPDP</a>
+        <a href="self-host.html">Self-host</a>
+        <a class="btn btn-small" href="demo.html">Live demo</a>
+      </nav>
+    </div>
+    <div class="ticker">
+      <div class="container ticker-row">
+        <span class="live-dot" id="ticker-dot"></span>
+        <span class="ticker-label">Demo gateway</span>
+        <span class="ticker-text" id="ticker-text">Connecting…</span>
+        <a href="demo.html#ledger" class="small">Open the ledger →</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero ledger-paper">
+      <div class="container">
+        <p class="eyebrow">How it works <span class="deva" lang="hi">कैसे</span></p>
+        <h1>Three checks, one log, <em>one outside witness.</em></h1>
+        <p class="lede">
+          VICT doesn't ask your developers to remember rules. It puts the rules in the only path borrower data can take out of your servers,
+          and writes down every decision where your NBFC partner can check it.
+        </p>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container steps">
+        <article class="step" data-reveal>
+          <span class="step-n">1</span>
+          <div>
+            <h3>Ask before you send</h3>
+            <p>Before calling a bureau, AA or KYC provider, your code asks the consent authority for a token. The authority checks the borrower's consent for this lender and this purpose. If it's missing, withdrawn or expired, no token is issued and nothing touches the network.</p>
+            <ul class="checklist">
+              <li>Consent is keyed on lender, borrower and purpose together.</li>
+              <li>A token lives 60 seconds and names the exact hosts it may reach.</li>
+              <li>The app carries the token but can't create one: only the authority holds the signing key.</li>
+            </ul>
+          </div>
+          <div class="ticket" aria-label="Anatomy of a consent token">
+            <div class="ticket-head"><span>Consent token</span><span class="stamp" style="font-size: .62rem; padding: 2px 6px; border-width: 2px;">Signed</span></div>
+            <dl>
+              <dt>lsp</dt><dd>lsp-acme <span class="why">One fintech's consent can't authorise another's calls.</span></dd>
+              <dt>sub</dt><dd>borrower-001</dd>
+              <dt>pur</dt><dd>loan-eligibility <span class="why">Marketing needs its own consent.</span></dd>
+              <dt>hosts</dt><dd>["bureau.example.in"] <span class="why">Spend it at the bureau, nowhere else.</span></dd>
+              <dt>exp</dt><dd>now + 60 s</dd>
+              <dt>jti</dt><dd>random id <span class="why">Caps one token at four connections.</span></dd>
+              <dt>sig</dt><dd>HMAC-SHA256 <span class="why">Made by the consent authority, checked by the proxy.</span></dd>
+            </dl>
+          </div>
+        </article>
+
+        <article class="step" data-reveal>
+          <span class="step-n">2</span>
+          <div>
+            <h3>Show the token at the gate</h3>
+            <p>The call goes through VICT's egress proxy as an ordinary HTTPS <code>CONNECT</code>. The proxy checks the token's signature and expiry, that the destination is on your vendor list and named in the token, that the port is 443, and that consent is still valid right now. Then it opens a tunnel and steps aside.</p>
+            <ul class="checklist">
+              <li>It never decrypts TLS, so bureau client certificates and signed AA payloads pass through untouched.</li>
+              <li>Raw IP addresses and plain HTTP are refused.</li>
+              <li>When the borrower withdraws, open tunnels for that consent are cut within a second.</li>
+            </ul>
+          </div>
+          <div class="code">
+            <div class="code-bar"><span>What the proxy sees</span></div>
+<pre><code><span class="k">CONNECT</span> bureau.example.in:443 HTTP/1.1
+Host: bureau.example.in:443
+Proxy-Authorization: Basic dmljdDpleUps…   <span class="c"># the consent token</span>
+
+<span class="s">HTTP/1.1 200 Connection Established</span>
+<span class="c">[ TLS bytes the proxy cannot read ]</span>
+
+<span class="c"># or, for a host outside the token:</span>
+<span class="r">HTTP/1.1 403 Blocked: host-not-in-token</span></code></pre>
+          </div>
+        </article>
+
+        <article class="step" data-reveal>
+          <span class="step-n">3</span>
+          <div>
+            <h3>Leave no other way out</h3>
+            <p>An SDK that ignores the proxy should find nothing on the other side. A Terraform module gives app subnets three independent layers: a route table with no internet gateway or NAT, a network ACL that only allows traffic inside the VPC, and security groups that only reach the proxy.</p>
+            <ul class="checklist">
+              <li>Each layer holds on its own, so one permissive security group doesn't reopen a path.</li>
+              <li>The proxy gets one fixed IP, which bureaus and AAs can put on their own allow-lists.</li>
+              <li>Route tables, ACLs and security groups cost nothing in AWS.</li>
+            </ul>
+          </div>
+          <div class="code">
+            <div class="code-bar"><span>infra/terraform · egress_lockdown</span></div>
+<pre><code><span class="k">module</span> <span class="s">"egress_lockdown"</span> {
+  source                = <span class="s">"./modules/egress_lockdown"</span>
+  vpc_id                = aws_vpc.lsp.id
+  app_subnet_ids        = [aws_subnet.app_a.id,
+                           aws_subnet.app_b.id]
+  internal_egress_cidrs = [<span class="s">"10.0.5.0/24"</span>] <span class="c"># database</span>
+}</code></pre>
+          </div>
+        </article>
+
+        <article class="step" data-reveal>
+          <span class="step-n">4</span>
+          <div>
+            <h3>Write it down where the NBFC can check</h3>
+            <p>Every token issued or refused, every tunnel opened, blocked or cut, goes into a hash-chained ledger. Each entry's hash covers the one before it. The LSP signs the latest head with an Ed25519 key, and the NBFC's witness pulls it every few seconds.</p>
+            <ul class="checklist">
+              <li>The witness checks that each new head extends the one it already holds.</li>
+              <li>It works from 32-byte digests, so no borrower data reaches the NBFC.</li>
+              <li>Rewrite, delete or fork history and the alarm stays raised until someone investigates.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="chain" aria-label="Hash chain: each entry's hash covers the previous one">
+              <div class="chain-block"><b>#39</b>token-issued<br><span class="h">a41c…</span></div>
+              <div class="chain-link"></div>
+              <div class="chain-block witnessed"><b>#40</b>egress-allowed<br><span class="h">3fa2…</span><br></div>
+              <div class="chain-link"></div>
+              <div class="chain-block"><b>#41</b>egress-blocked<br><span class="h">9bc1…</span></div>
+              <div class="chain-link"></div>
+              <div class="chain-block"><b>#42</b>tunnel-closed<br><span class="h">e07d…</span></div>
+            </div>
+            <p class="small faint" style="margin-top: 6px;">Illustration. If the LSP edits #41, the hashes of #41 and #42 change, and #42 no longer extends what the NBFC already holds.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="code-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">For your developers</p>
+          <h2 id="code-title">One <code style="font-size: .8em;">with</code> block <em>per vendor call.</em></h2>
+          <p class="lede" style="margin-top: 14px;">The SDK opens one consented session per borrower, purpose and call. Each session gets its own token and connection pool, so a pooled connection can never carry another borrower's request.</p>
+          <p class="muted">Python today. Any HTTP client that supports an HTTPS proxy can use the gateway once the consent authority runs as its own service; that's next on the roadmap.</p>
+        </div>
+        <div class="code" data-reveal>
+          <div class="code-bar">
+            <div class="code-tabs" role="tablist" aria-label="Code samples">
+              <button type="button" role="tab" id="tab-sdk" aria-controls="panel-sdk" aria-selected="true">Python SDK</button>
+              <button type="button" role="tab" id="tab-ledger" aria-controls="panel-ledger" aria-selected="false">Ledger entry</button>
+              <button type="button" role="tab" id="tab-witness" aria-controls="panel-witness" aria-selected="false">NBFC witness</button>
+            </div>
+            <button type="button" class="copy-btn">Copy</button>
+          </div>
+          <div role="tabpanel" id="panel-sdk" aria-labelledby="tab-sdk">
+<pre><code><span class="k">from</span> src.egress.sdk <span class="k">import</span> VictEgress, EgressBlocked
+<span class="k">from</span> src.egress.consent <span class="k">import</span> ConsentDenied
+
+vict = VictEgress(issuer=authority, lsp_id=<span class="s">"lsp-acme"</span>,
+                  proxy_url=<span class="s">"http://vict-proxy:3128"</span>)
+
+<span class="k">try</span>:
+    <span class="k">with</span> vict.session(principal_id=<span class="s">"borrower-001"</span>,
+                      purpose=<span class="s">"loan-eligibility"</span>,
+                      hosts=[<span class="s">"bureau.example.in"</span>]) <span class="k">as</span> s:
+        score = s.post(<span class="s">"https://bureau.example.in/score"</span>,
+                       json=payload, cert=client_cert)
+<span class="k">except</span> ConsentDenied <span class="k">as</span> e:   <span class="c"># nothing was sent</span>
+    log.info(<span class="s">"blocked before network: %s"</span>, e.reason)
+<span class="k">except</span> EgressBlocked <span class="k">as</span> e:   <span class="c"># nothing reached the host</span>
+    log.warning(<span class="s">"blocked at proxy: %s"</span>, e.reason)</code></pre>
+          </div>
+          <div role="tabpanel" id="panel-ledger" aria-labelledby="tab-ledger" hidden>
+<pre><code><span class="c">// one line of egress-audit.jsonl (illustrative values)</span>
+{<span class="s">"event"</span>: <span class="s">"egress-blocked"</span>,
+ <span class="s">"lsp_id"</span>: <span class="s">"lsp-acme"</span>,
+ <span class="s">"principal_id"</span>: <span class="s">"borrower-001"</span>,
+ <span class="s">"purpose"</span>: <span class="s">"loan-eligibility"</span>,
+ <span class="s">"target"</span>: <span class="s">"analytics.example.com:443"</span>,
+ <span class="s">"reason"</span>: <span class="r">"host-not-allow-listed"</span>,
+ <span class="s">"status"</span>: 403,
+ <span class="s">"seq"</span>: 42,
+ <span class="s">"ts"</span>: <span class="s">"2026-10-03T09:14:02+00:00"</span>,
+ <span class="s">"prev"</span>: <span class="s">"3fa2…"</span>,
+ <span class="s">"hash"</span>: <span class="s">"9bc1…"</span>}</code></pre>
+          </div>
+          <div role="tabpanel" id="panel-witness" aria-labelledby="tab-witness" hidden>
+<pre><code><span class="c"># runs at the NBFC, polls the LSP every 10 s</span>
+python -m src.egress.witness \
+    --lsp-url https://vict.lsp.example.in \
+    --lsp-id lsp-acme \
+    --public-key lsp-checkpoint.pub.pem \
+    --state witness-state.json \
+    --interval 10</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="numbers-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Measured, not promised</p>
+          <h2 id="numbers-title">Fast enough to sit <em>in the underwriting path.</em></h2>
+          <p>Numbers from the test suite and benchmarks on a development laptop. The sources are in the repository's production-readiness notes.</p>
+        </div>
+        <div class="figures" data-reveal>
+          <div class="figure"><b>~3,000</b><span>ledger entries written per second, file write included</span></div>
+          <div class="figure"><b>~5/s</b><span>needed for 100,000 loan calls a day, about four entries per call</span></div>
+          <div class="figure"><b>3 ms</b><span>for an NBFC witness poll on a 500,000-entry ledger</span></div>
+          <div class="figure"><b>&lt; 1 s</b><span>from a borrower's withdrawal to the open connection closing</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="why-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">Design decision</p>
+          <h2 id="why-title">Why an explicit proxy, <em>not eBPF or a sidecar?</em></h2>
+        </div>
+        <div data-reveal>
+          <p>A transparent interceptor only sees the destination and encrypted bytes. It has no consent token, so it can't tell one borrower's call from another's.</p>
+          <p>Seeing more would mean decrypting TLS, which breaks the client certificates and signed payloads that bureaus and Account Aggregators require.</p>
+          <p>An explicit proxy keeps per-call consent and end-to-end encryption. The network lockdown removes the bypass that an explicit proxy would otherwise leave open.</p>
+          <p class="note"><strong>Known gap: DNS.</strong> AWS security groups don't filter queries to the Amazon resolver, so compromised code could leak a little data through DNS lookups. Route 53 Resolver DNS Firewall closes it; it's a paid AWS service.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+        <div class="cta-panel" data-reveal>
+          <div>
+            <h2>Now try to get past it.</h2>
+            <p>Seven missions against the live gateway, from a leaky SDK to rewriting your own audit log.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn" href="demo.html">Open the live demo <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="index.html" aria-label="VICT home">
+            <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+            <span class="logo-word">VICT</span>
+          </a>
+          <p style="margin-top: 12px; max-width: 38ch;">A free, open-source egress gate for India's digital lenders. Runs in your own AWS Mumbai account.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="demo.html">Live demo</a></li>
+            <li><a href="nbfc.html">For NBFCs</a></li>
+            <li><a href="self-host.html">Self-host</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rules</h4>
+          <ul>
+            <li><a href="regulation.html">RBI &amp; DPDP map</a></li>
+            <li><a href="regulation.html#timeline">Deadlines</a></li>
+            <li><a href="VICT-Technical-Whitepaper.txt">Whitepaper (txt)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Code</h4>
+          <ul>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/blob/main/docs/PRODUCTION_READINESS.md" rel="noopener">Production readiness</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/issues" rel="noopener">Report an issue</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>Plain-language summaries of RBI and DPDP rules, not legal advice.</span>
+        <span>Demo vendors are stand-ins. No real borrower data is processed.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>

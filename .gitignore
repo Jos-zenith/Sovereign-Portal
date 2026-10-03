@@ -2,3 +2,8 @@
 __pycache__/
 *.py[cod]
 vict-consent.db
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>For NBFCs · VICT</title>
+  <meta name="description" content="For NBFC risk and compliance teams: verify your LSP's egress log yourself, from signed checkpoints and hashes, without receiving borrower data." />
+  <meta name="vict-api-base" content="https://sovereign-portal.onrender.com" />
+  <meta name="theme-color" content="#f4efe4" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="logo" href="index.html" aria-label="VICT home">
+        <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+        <span class="logo-word">VICT</span><span class="logo-sub">egress gate</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="nbfc.html" aria-current="page">For NBFCs</a>
+        <a href="regulation.html">RBI &amp; DPDP</a>
+        <a href="self-host.html">Self-host</a>
+        <a class="btn btn-small" href="demo.html">Live demo</a>
+      </nav>
+    </div>
+    <div class="ticker">
+      <div class="container ticker-row">
+        <span class="live-dot" id="ticker-dot"></span>
+        <span class="ticker-label">Demo gateway</span>
+        <span class="ticker-text" id="ticker-text">Connecting…</span>
+        <a href="demo.html#ledger" class="small">Open the ledger →</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero ledger-paper">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">For NBFC risk &amp; compliance <span class="deva" lang="hi">साक्ष्य</span></p>
+          <h1>Check your LSP's log. <em>Don't just receive it.</em></h1>
+          <p class="lede">
+            RBI's digital lending rules leave you responsible for what your lending service providers do with borrower data.
+            Today that oversight is a questionnaire and an annual audit. VICT gives you a running process that checks the LSP's egress log every few seconds, and tells you the moment its history changes.
+          </p>
+          <div class="hero-ctas">
+            <a class="btn" href="demo.html#mission-rewrite">Watch the alarm fire <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" href="#run">Run a witness</a>
+          </div>
+        </div>
+        <div class="card" data-reveal style="box-shadow: var(--shadow);">
+          <p class="eyebrow" style="margin-bottom: 10px;">What you receive</p>
+          <div class="code">
+            <div class="code-bar"><span>GET /egress/witness/checkpoint</span></div>
+<pre><code>{<span class="s">"lsp_id"</span>: <span class="s">"lsp-acme"</span>,
+ <span class="s">"seq"</span>:    1842,
+ <span class="s">"head"</span>:   <span class="s">"9bc14e…"</span>,   <span class="c"># 32-byte hash</span>
+ <span class="s">"ts"</span>:     <span class="s">"2026-10-03T09:14:02Z"</span>,
+ <span class="s">"sig"</span>:    <span class="s">"Ed25519…"</span>}  <span class="c"># key you pinned</span></code></pre>
+          </div>
+          <p class="small muted" style="margin: 14px 0 0;">Plus the 32-byte digest of each new entry. No names, no PAN, no scores, no bank statements. Illustrative values.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="checks-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">On every poll</p>
+          <h2 id="checks-title">What raises <em>an alarm.</em></h2>
+          <p>Alarms are sticky. Once raised, they survive restarts until someone on your side investigates and clears them.</p>
+        </div>
+        <div class="table-wrap" data-reveal>
+          <table>
+            <thead><tr><th>Alarm</th><th>What it means</th><th>Likely cause</th></tr></thead>
+            <tbody>
+              <tr><td><code>rollback</code></td><td>Entries you already witnessed have disappeared.</td><td class="muted">The LSP deleted or truncated its log.</td></tr>
+              <tr><td><code>does-not-extend-witnessed-head</code></td><td>The new head doesn't build on the one you hold.</td><td class="muted">An entry was edited and the chain rebuilt.</td></tr>
+              <tr><td><code>fork</code></td><td>Two different heads signed for the same sequence number.</td><td class="muted">The LSP showed different histories to different parties.</td></tr>
+              <tr><td><code>bad-signature</code></td><td>The checkpoint wasn't signed by the key you pinned.</td><td class="muted">Key swapped, or someone else is answering.</td></tr>
+              <tr><td><code>wrong-lsp</code></td><td>The checkpoint names a different LSP.</td><td class="muted">Misconfiguration, or a substituted log.</td></tr>
+              <tr><td><code>digest-count-mismatch</code></td><td>The LSP sent the wrong number of digests.</td><td class="muted">Entries withheld from the witness.</td></tr>
+              <tr><td><code>time-went-backwards</code></td><td>The checkpoint is older than one already accepted.</td><td class="muted">A replayed checkpoint.</td></tr>
+              <tr><td><code>lsp-unreachable</code> <span class="tag tag-warn">signal</span></td><td>The LSP didn't answer this poll.</td><td class="muted">Downtime. Reported, but not treated as tampering.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="proves-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Read this before you rely on it</p>
+          <h2 id="proves-title">What it proves, <em>and what it doesn't.</em></h2>
+        </div>
+        <div class="grid-2">
+          <div class="card" data-reveal style="border-top: 4px solid var(--green);">
+            <h3>It proves</h3>
+            <ul class="checklist">
+              <li>History you've witnessed hasn't been edited, deleted or forked since.</li>
+              <li>The LSP signed each checkpoint, so it can't later deny publishing it.</li>
+              <li>The LSP can only rewrite entries newer than your last poll: at a 10-second interval, that's at most 10 seconds of history.</li>
+              <li>You did it without receiving a single field of borrower data.</li>
+            </ul>
+          </div>
+          <div class="card" data-reveal style="border-top: 4px solid var(--red);">
+            <h3>It doesn't prove</h3>
+            <ul class="checklist cross">
+              <li><strong>That every call was logged.</strong> The LSP runs the proxy. Network lockdown makes a call that skips the proxy fail, and <code>verify_lockdown.sh</code> lets you check that on their infrastructure.</li>
+              <li><strong>Where vendors store data.</strong> The ledger shows which hosts received data, not their data centres.</li>
+              <li><strong>That vendors erased data</strong> after a withdrawal. It tells you which ones to ask.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="run" aria-labelledby="run-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">Run it on your side</p>
+          <h2 id="run-title">One process. <em>Your schedule.</em></h2>
+          <p class="lede" style="margin-top: 14px;">The witness pulls; the LSP doesn't push. So the LSP can't choose when to report, and a quiet LSP shows up as a signal instead of silence.</p>
+          <ol class="checklist" style="margin-top: 20px;">
+            <li>Get the LSP's checkpoint public key, and pin it.</li>
+            <li>Run the witness against their gateway URL.</li>
+            <li>Route its alarms to whoever owns LSP oversight.</li>
+          </ol>
+        </div>
+        <div class="code" data-reveal>
+          <div class="code-bar"><span>At the NBFC</span><button type="button" class="copy-btn">Copy</button></div>
+<pre><code>python -m src.egress.witness \
+    --lsp-url https://vict.lsp.example.in \
+    --lsp-id lsp-acme \
+    --public-key lsp-checkpoint.pub.pem \
+    --state witness-state.json \
+    --interval 10</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+        <div class="cta-panel" data-reveal>
+          <div>
+            <p class="eyebrow">Design partners wanted</p>
+            <h2>Want this on one of your LSPs?</h2>
+            <p>VICT is free and open source. We're looking for an NBFC to run the witness against a pilot LSP before the DPDP deadline in May 2027.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn" href="https://github.com/Jos-zenith/Sovereign-Portal/issues/new?title=NBFC%20pilot%20request" rel="noopener">Request a pilot</a>
+            <a class="btn btn-ghost" href="regulation.html">See the rule map</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="index.html" aria-label="VICT home">
+            <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+            <span class="logo-word">VICT</span>
+          </a>
+          <p style="margin-top: 12px; max-width: 38ch;">A free, open-source egress gate for India's digital lenders. Runs in your own AWS Mumbai account.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="demo.html">Live demo</a></li>
+            <li><a href="nbfc.html">For NBFCs</a></li>
+            <li><a href="self-host.html">Self-host</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rules</h4>
+          <ul>
+            <li><a href="regulation.html">RBI &amp; DPDP map</a></li>
+            <li><a href="regulation.html#timeline">Deadlines</a></li>
+            <li><a href="VICT-Technical-Whitepaper.txt">Whitepaper (txt)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Code</h4>
+          <ul>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/blob/main/docs/PRODUCTION_READINESS.md" rel="noopener">Production readiness</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/issues" rel="noopener">Report an issue</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>Plain-language summaries of RBI and DPDP rules, not legal advice.</span>
+        <span>Demo vendors are stand-ins. No real borrower data is processed.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>

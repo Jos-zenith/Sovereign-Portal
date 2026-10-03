@@ -10,7 +10,7 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable
 
 from src.egress import tokens
 from src.egress.audit import AuditLog
@@ -44,11 +44,19 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+RevokeListener = Callable[[str, str, str], None]
+
+
 class ConsentStore:
     def __init__(self, path: str | Path) -> None:
         self._path = str(path)
+        self._revoke_listeners: list[RevokeListener] = []
         with self._db() as conn:
             conn.executescript(SCHEMA)
+
+    def on_revoke(self, listener: RevokeListener) -> None:
+        """Call listener(lsp_id, principal_id, purpose) after each revocation is committed."""
+        self._revoke_listeners.append(listener)
 
     def _db(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self._path)
@@ -75,6 +83,19 @@ class ConsentStore:
                 """,
                 (_now().isoformat(), lsp_id, principal_id, purpose),
             )
+        for listener in self._revoke_listeners:
+            listener(lsp_id, principal_id, purpose)
+
+    def entries(self, lsp_id: str) -> list[dict[str, str | None]]:
+        with self._db() as conn:
+            rows = conn.execute(
+                """
+                SELECT principal_id, purpose, granted_at, expires_at, revoked_at FROM egress_consent
+                WHERE lsp_id = ? ORDER BY principal_id, purpose
+                """,
+                (lsp_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
 
     def check(self, lsp_id: str, principal_id: str, purpose: str) -> ConsentCheck:
         with self._db() as conn:

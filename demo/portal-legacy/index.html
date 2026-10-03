@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VICT Sovereign Security OS</title>
+  <meta name="vict-api-base" content="https://sovereign-portal.onrender.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <header class="topbar">
+    <div class="logo-wrap">
+      <span class="logo-dot"></span>
+      <div>
+        <p class="kicker">Validated Identity & Compliance Trust-layer</p>
+        <h1>VICT Sovereign Security OS</h1>
+      </div>
+    </div>
+    <div class="status-pills">
+      <span class="pill green">DPDP: Enforced</span>
+      <span class="pill blue">RBI: Localized</span>
+      <span class="pill amber" id="threat-pill">Threat Level: Guarded</span>
+      <span class="pill blue" id="live-clock">Sync: --:--:--</span>
+    </div>
+  </header>
+
+  <section class="live-feed" aria-live="polite">
+    <span class="feed-label">Live Sovereignty Feed</span>
+    <p id="feed-line">Initializing compliance telemetry...</p>
+  </section>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="kicker">Track 7: Serverless Security</p>
+      <h2>Sovereign Serverless Security for India's Digital Frontier.</h2>
+      <p class="hero-sub">VICT is a zero-trust execution layer that enforces DPDP compliance at the kernel level. Stop data violations before the first line of code even runs.</p>
+      <div class="hero-actions">
+        <a class="action cta" href="./VICT-Technical-Whitepaper.txt" download>Download Technical Whitepaper</a>
+      </div>
+    </div>
+    <div class="hero-visual card">
+      <h3>Interactive Terminal</h3>
+      <div class="terminal hero-terminal" id="hero-terminal">
+        <p><span>&gt;</span> vict deploy --function processPayments</p>
+        <p class="hero-line">[SCANNING...]</p>
+        <p class="hero-line warn">[!] VIOLATION FOUND: Function 'processPayments' makes an external API call to 'us-east-1'.</p>
+        <p class="hero-line warn">[!] ACTION: Geofence enforced. Diverting traffic to 'ap-south-1' (Mumbai).</p>
+        <p class="hero-line ok">[STATUS] Function Hardened and Deployed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card statement">
+    <h3>Problem Statement</h3>
+    <p>Every serverless function in India that touches personal or payment data is one misconfigured IAM policy, one missing consent check, or one non-India API call away from a DPDP violation - and no existing FaaS platform enforces these rules automatically at runtime.</p>
+    <p>VICT is a sovereign serverless security layer that intercepts every function invocation before execution, enforces citizen consent in real-time, blocks data from leaving India at the kernel level using eBPF, and generates a tamper-proof forensic trail - turning DPDP compliance from a quarterly audit into a continuous, automated guarantee.</p>
+  </section>
+
+  <section class="feature-grid">
+    <article class="card feature triple-engine">
+      <h3>Triple-Engine: Secret Sauce</h3>
+      <p>Three controls work together so compliance is runtime behavior, not post-incident paperwork.</p>
+    </article>
+    <article class="card feature triple-engine">
+      <h3>Wasm Sandbox</h3>
+      <p>We compile logic into WebAssembly modules. It's 100x faster than Docker and mathematically isolated.</p>
+    </article>
+    <article class="card feature triple-engine">
+      <h3>eBPF Guardrails</h3>
+      <p>We use kernel-level tracing to block unauthorized network calls. If the code tries to leak data, the kernel kills the process before the packet leaves.</p>
+    </article>
+    <article class="card feature triple-engine">
+      <h3>Consent Gateway</h3>
+      <p>A zero-trust interceptor that checks for DPDP-compliant user consent before the first line of code executes.</p>
+    </article>
+    <article class="card feature">
+      <h3>Shield Real-Time Consent (DPDP)</h3>
+      <p>Intercepts invocations to verify Data Principal consent via a secure Identity Bridge.</p>
+    </article>
+    <article class="card feature">
+      <h3>Map Kernel-Level Geofencing (RBI)</h3>
+      <p>Uses eBPF to block non-India API calls at the OS level, ensuring data never leaves the territory.</p>
+    </article>
+    <article class="card feature">
+      <h3>Gavel Automated Forensics</h3>
+      <p>Generates audit-ready logs that meet the 72-hour breach reporting requirement of the DPDP Act.</p>
+    </article>
+  </section>
+
+  <section class="card technical-edge-center">
+    <h3>Technical Edge: Isolation + Enforcement + Consent</h3>
+    <div class="edge-columns">
+      <article class="edge-card">
+        <h4>Wasm Sandbox (Isolation Win)</h4>
+        <p>Standard containers have a 3,000ms attack surface. VICT uses Wasm sandboxes with &lt;1ms cold starts, reducing the window for exploitation to near zero.</p>
+      </article>
+      <article class="edge-card">
+        <h4>eBPF Enforcement (Geofencing Win)</h4>
+        <div class="terminal edge-terminal" id="ebpf-stream">
+          <p><span>&gt;</span> [VICT] eBPF stream initialized</p>
+        </div>
+      </article>
+      <article class="edge-card">
+        <h4>DPDP Consent Gateway</h4>
+        <p>Click revoke to simulate zero-trust interception before execution.</p>
+        <div class="mock-function" id="mock-function-state">
+          <p class="status running" id="mock-status">MOCK FUNCTION: RUNNING</p>
+          <p id="mock-detail">Consent valid. Execution allowed.</p>
+        </div>
+        <button class="danger" id="edge-revoke-consent">Revoke Consent</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="card compliance-dashboard">
+    <h3>Compliance-as-a-Service Dashboard</h3>
+    <div class="dashboard-grid-wide">
+      <article class="dash-card">
+        <h4>Trust Score</h4>
+        <div class="dial-wrap">
+          <svg class="trust-dial" viewBox="0 0 140 140" aria-label="DPDP trust score dial">
+            <circle cx="70" cy="70" r="54" class="dial-track"></circle>
+            <circle cx="70" cy="70" r="54" class="dial-progress" id="dial-progress"></circle>
+          </svg>
+          <div class="dial-value" id="dial-value">98</div>
+        </div>
+        <p>0-100 real-time confidence based on consent and localization outcomes.</p>
+      </article>
+
+      <article class="dash-card">
+        <h4>Consent Heatmap</h4>
+        <svg class="india-map heatmap" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="Consent heatmap across India">
+          <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
+          <circle class="hotspot high" cx="178" cy="215" r="18"></circle>
+          <circle class="hotspot med" cx="210" cy="125" r="14"></circle>
+          <circle class="hotspot med" cx="225" cy="245" r="12"></circle>
+          <text x="170" y="245">Mumbai: High consent</text>
+          <text x="222" y="128">Delhi: Medium</text>
+          <text x="237" y="249">Hyderabad: Medium</text>
+        </svg>
+      </article>
+
+      <article class="dash-card">
+        <h4>Audit Trail (Tamper-proof -> SigNoz)</h4>
+        <div class="trail-list" id="trail-list">
+          <p>Bootstrapping secure audit stream...</p>
+        </div>
+        <p>Prepared for 72-hour breach reporting evidence workflows.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="card split-demo">
+    <h3>See VICT in Action</h3>
+    <div class="split-grid">
+      <div class="terminal bad">
+        <p><span>$</span> python function.py --send us-east-1</p>
+        <p class="warn">[VIOLATION] Transfer accepted by default pipeline.</p>
+      </div>
+      <div class="terminal good">
+        <p><span>$</span> vict invoke --region ap-south-1</p>
+        <p class="warn">[VICT-BLOCK] Violation: Cross-border transfer to 'us-east-1' blocked by RBI Policy 4.2</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Compliance Map: Data Residency in India</h3>
+    <div class="map-wrap">
+      <svg class="india-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India compliance map">
+        <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
+        <circle class="city safe" cx="210" cy="125" r="7"></circle>
+        <text x="222" y="129">Delhi</text>
+        <circle class="city safe" cx="178" cy="215" r="7"></circle>
+        <text x="190" y="220">Mumbai</text>
+        <circle class="city safe" cx="225" cy="245" r="7"></circle>
+        <text x="237" y="250">Hyderabad</text>
+      </svg>
+      <div class="map-legend">
+        <p><strong>Sovereign Green:</strong> Authorized India-only processing zones.</p>
+        <p><strong>Regulatory Red:</strong> Any egress outside India is blocked in-kernel.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card sovereignty-dashboard">
+    <h3>Sovereignty Dashboard (Visual Proof)</h3>
+    <div class="dashboard-grid">
+      <div>
+        <h4>Compliance Map</h4>
+        <svg class="india-map dashboard-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India sovereignty dashboard map">
+          <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
+          <circle class="city safe" cx="210" cy="125" r="7"></circle>
+          <text x="222" y="129">Delhi</text>
+          <circle class="city safe" cx="178" cy="215" r="7"></circle>
+          <text x="206" y="221">Mumbai</text>
+          <g class="shield-icon" transform="translate(158,214)">
+            <path d="M30 6l18 7v14c0 15-10 28-18 33-8-5-18-18-18-33V13l18-7z"></path>
+          </g>
+          <path class="data-line" d="M178 215 C210 190, 220 160, 210 125"></path>
+          <path class="data-line" d="M178 215 C200 230, 220 245, 225 245"></path>
+        </svg>
+      </div>
+      <div class="dashboard-widgets">
+        <div class="metric">
+          <p>DPDP Consent Monitor</p>
+          <h3 id="consent-checks">0</h3>
+          <p>Live Consent Verifications</p>
+        </div>
+        <div class="metric">
+          <p>Localization Status</p>
+          <h3>BORDER LOCKED</h3>
+          <p>Data routes constrained to India regions.</p>
+        </div>
+        <button class="danger" id="emergency-purge">Emergency RBI Compliance Purge</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card dx">
+    <h3>Deploy with confidence. We handle the sovereignty, you handle the code.</h3>
+    <div class="terminal">
+      <p><span>$</span> vict deploy --region mumbai --rules dpdp-2023</p>
+    </div>
+  </section>
+
+  <nav class="role-nav">
+    <button class="role-btn active" data-role="developer">Developer Co-pilot</button>
+    <button class="role-btn" data-role="auditor">Auditor Command</button>
+    <button class="role-btn" data-role="citizen">Citizen Consent Vault</button>
+  </nav>
+
+  <main>
+    <section class="panel active" id="developer">
+      <div class="panel-grid">
+        <article class="card">
+          <h2>Build-Time Security Co-pilot</h2>
+          <p>Run secure-by-default commands directly in your terminal workflow.</p>
+          <div class="terminal">
+            <p><span>$</span> vict scan src/functions/payment.py</p>
+            <p class="warn">Warning: Data localization violation on line 42 (`api.us-east-1.example.com`).</p>
+            <p><span>$</span> vict wrap src/functions/payment.py --target ap-south-1</p>
+            <p class="ok">Wrapped as Wasm package: dist/payment.wasm.stub</p>
+            <p><span>$</span> vict deploy --region ap-south-1</p>
+            <p class="ok">Least-privilege IAM policy generated and deployment plan created.</p>
+          </div>
+          <button class="action" id="invoke-demo">Run Function Demo</button>
+          <button class="danger" id="simulate-breach">Simulate US Egress Breach</button>
+          <p id="invoke-result" class="result">Waiting for invoke test...</p>
+          <div id="breach-banner" class="breach-banner" aria-live="polite">[ACCESS DENIED: RBI LOCALIZATION BREACH]</div>
+        </article>
+
+        <article class="card">
+          <h2>IDE Signal Feed</h2>
+          <ul class="issues">
+            <li><strong>Line 42</strong> Non-India endpoint detected for PII payload.</li>
+            <li><strong>Line 78</strong> Wildcard IAM action (`s3:*`) should be narrowed.</li>
+            <li><strong>Line 120</strong> Missing consent check before payment event publish.</li>
+          </ul>
+          <button class="action" id="simulate-fix">Auto-fix Policy Suggestions</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="auditor">
+      <div class="panel-grid">
+        <article class="card">
+          <h2>Compliance Heartbeat</h2>
+          <div class="metric-grid">
+            <div class="metric">
+              <p>Trust Score</p>
+              <h3 id="trust-score">98.7</h3>
+            </div>
+            <div class="metric">
+              <p>DPDP Checks</p>
+              <h3>Passing</h3>
+            </div>
+            <div class="metric">
+              <p>RBI Localization</p>
+              <h3>India Only</h3>
+            </div>
+          </div>
+          <div class="heartbeat" id="heartbeat">
+            <div class="hb-stat"><span>Allow</span><strong id="hb-allow">0</strong></div>
+            <div class="hb-stat"><span>Deny</span><strong id="hb-deny">0</strong></div>
+            <div class="hb-stat"><span>Total Events</span><strong id="hb-total">0</strong></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Live Threat Map: India</h2>
+          <svg class="india-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India data processing map">
+            <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
+            <circle class="city safe" cx="210" cy="125" r="7"></circle>
+            <text x="222" y="129">Delhi</text>
+            <circle class="city safe" cx="178" cy="215" r="7"></circle>
+            <text x="190" y="220">Mumbai</text>
+            <circle class="city safe" cx="225" cy="245" r="7"></circle>
+            <text x="237" y="250">Hyderabad</text>
+            <circle class="city alert" cx="350" cy="68" r="7"></circle>
+            <text x="287" y="90">Blocked: Outside India</text>
+          </svg>
+          <button class="danger" id="kill-switch">Revoke RBI Compliance (Kill-Switch Demo)</button>
+        </article>
+      </div>
+      <article class="card full">
+        <h2>Forensic Drill-Down</h2>
+        <div class="trace" id="audit-feed">
+          <p>Waiting for live audit events from gateway...</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel" id="citizen">
+      <article class="card full mobile-card">
+        <h2>Consent Vault</h2>
+        <p class="simple">You control every data permission. Revoke anytime with one tap.</p>
+        <div class="consent-list">
+          <div class="consent-item">
+            <div>
+              <h4>Location for GST Calculation</h4>
+              <p>Granted to: FintechTax App</p>
+            </div>
+            <button class="action revoke" data-principal="citizen-001" data-purpose="gst-location">One-Click Revoke</button>
+          </div>
+          <div class="consent-item">
+            <div>
+              <h4>UPI Transaction Metadata</h4>
+              <p>Granted to: SmartLedger</p>
+            </div>
+            <button class="action revoke" data-principal="citizen-001" data-purpose="upi-metadata">One-Click Revoke</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card full">
+        <h2>Contextual Consent Popup Demo</h2>
+        <p class="simple">"This function needs your location to calculate GST. Do you agree?"</p>
+        <div class="popup-actions">
+          <button class="action" id="agree">Agree</button>
+          <button class="danger" id="deny">Deny</button>
+        </div>
+        <p id="consent-result" class="result">Waiting for user response...</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

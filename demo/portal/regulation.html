@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RBI &amp; DPDP map · VICT</title>
+  <meta name="description" content="What RBI's Digital Lending Directions and India's DPDP Act ask of a loan app's data flows, and which parts VICT enforces, evidences or leaves to you." />
+  <meta name="vict-api-base" content="https://sovereign-portal.onrender.com" />
+  <meta name="theme-color" content="#f4efe4" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="logo" href="index.html" aria-label="VICT home">
+        <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+        <span class="logo-word">VICT</span><span class="logo-sub">egress gate</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="nbfc.html">For NBFCs</a>
+        <a href="regulation.html" aria-current="page">RBI &amp; DPDP</a>
+        <a href="self-host.html">Self-host</a>
+        <a class="btn btn-small" href="demo.html">Live demo</a>
+      </nav>
+    </div>
+    <div class="ticker">
+      <div class="container ticker-row">
+        <span class="live-dot" id="ticker-dot"></span>
+        <span class="ticker-label">Demo gateway</span>
+        <span class="ticker-text" id="ticker-text">Connecting…</span>
+        <a href="demo.html#ledger" class="small">Open the ledger →</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero ledger-paper">
+      <div class="container">
+        <p class="eyebrow">RBI &amp; DPDP <span class="deva" lang="hi">नियम</span></p>
+        <h1>The rules, <em>line by line.</em></h1>
+        <p class="lede">
+          What RBI's digital lending rules and India's data protection law ask of a loan app's outbound data, and for each one,
+          whether VICT enforces it, gives you evidence for it, or leaves it to you.
+        </p>
+        <p class="note" style="max-width: 760px; margin-top: 24px;"><strong>Not legal advice.</strong> These are plain-language summaries for engineers and compliance teams. Read the sources linked below, and check obligations with your counsel.</p>
+      </div>
+    </section>
+
+    <section class="section-tight" id="timeline" aria-labelledby="timeline-title">
+      <div class="container">
+        <div class="section-head" style="margin-bottom: 8px;">
+          <p class="eyebrow">Deadlines</p>
+          <h2 id="timeline-title">Where we are <em>on the clock.</em></h2>
+        </div>
+        <div class="timeline" data-reveal>
+          <ol class="timeline-events">
+            <li class="timeline-event" style="left: 8%" data-date="2018-04-06"><b>6 Apr 2018</b>RBI: payment data stored in India</li>
+            <li class="timeline-event" style="left: 29%" data-date="2023-08-11"><b>11 Aug 2023</b>DPDP Act passed</li>
+            <li class="timeline-event" style="left: 50%" data-date="2025-05-08"><b>8 May 2025</b>RBI Digital Lending Directions</li>
+            <li class="timeline-event" style="left: 71%" data-date="2025-11-13"><b>13 Nov 2025</b>DPDP Rules notified</li>
+            <li class="timeline-event future" style="left: 92%" data-date="2027-05-13"><b>13 May 2027</b>Most DPDP duties apply</li>
+          </ol>
+          <div class="timeline-bar">
+            <span class="timeline-today" id="timeline-today" style="left: 83%"><span>Today</span></span>
+          </div>
+        </div>
+        <ul class="timeline-list">
+          <li><b>6 Apr 2018</b><span>RBI circular: payment system data stored only in India.</span></li>
+          <li><b>11 Aug 2023</b><span>Digital Personal Data Protection Act passed.</span></li>
+          <li><b>8 May 2025</b><span>Reserve Bank of India (Digital Lending) Directions, 2025.</span></li>
+          <li><b>13 Nov 2025</b><span>DPDP Rules, 2025 notified.</span></li>
+          <li><b>13 May 2027</b><span>Most DPDP obligations apply. <strong><span data-countdown="2027-05-13">–</span> days left.</strong></span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="map-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">The map</p>
+          <h2 id="map-title">Obligation by obligation.</h2>
+          <p>
+            <span class="tag tag-good">Enforced</span> VICT stops the violation in the request path.
+            <span class="tag tag-info">Evidence</span> VICT gives you a record to show.
+            <span class="tag tag-warn">Partial</span> covers part of it.
+            <span class="tag tag-bad">Not covered</span> is still your job.
+          </p>
+        </div>
+        <div class="table-wrap" data-reveal>
+          <table class="reg-table">
+            <thead><tr><th>Obligation</th><th>What VICT does</th><th>What it leaves in the ledger</th><th>Coverage</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Use borrower data only with explicit consent, for a stated purpose.<span class="src">RBI Digital Lending Directions, 2025 · DPDP Act, 2023</span></td>
+                <td>A consent token is issued per lender, borrower and purpose. No valid consent, no token, no call.</td>
+                <td><code>token-issued</code> and <code>token-denied</code>, each with its purpose.</td>
+                <td><span class="tag tag-good">Enforced</span></td>
+              </tr>
+              <tr>
+                <td>Withdrawal must be as easy as giving consent, and processing must stop.<span class="src">DPDP Act, 2023 · DPDP Rules, 2025</span></td>
+                <td>Withdrawal blocks the next call and closes connections already open for that consent, within a second.</td>
+                <td><code>consent-withdrawn</code> blocks, and <code>tunnel-closed</code> with the bytes moved before the cut.</td>
+                <td><span class="tag tag-good">Enforced</span></td>
+              </tr>
+              <tr>
+                <td>Share data only with agreed parties, for the agreed function.<span class="src">RBI Digital Lending Directions, 2025</span></td>
+                <td>A vendor allow-list, plus the hosts named inside each token. A rogue SDK or a host swap is refused.</td>
+                <td><code>host-not-allow-listed</code>, <code>host-not-in-token</code>, <code>raw-ip-target</code>.</td>
+                <td><span class="tag tag-good">Enforced</span></td>
+              </tr>
+              <tr>
+                <td>Keep data in India. Data processed abroad must be deleted there and brought back within 24 hours.<span class="src">RBI Digital Lending Directions, 2025 · RBI payment data circular, 2018</span></td>
+                <td>Terraform refuses non-India AWS regions. Calls to hosts outside the vendor list, including ones abroad, are refused by default.</td>
+                <td>Every attempt to reach an unlisted host.</td>
+                <td><span class="tag tag-warn">Partial</span><span class="src">Controls hostnames, not where a vendor stores data.</span></td>
+              </tr>
+              <tr>
+                <td>The NBFC stays responsible for what its LSP does.<span class="src">RBI Digital Lending Directions, 2025</span></td>
+                <td>The NBFC runs a witness that verifies the LSP's ledger from signed checkpoints and hashes.</td>
+                <td>Signed checkpoints, and sticky alarms on any rewrite.</td>
+                <td><span class="tag tag-info">Evidence</span></td>
+              </tr>
+              <tr>
+                <td>Erase personal data once consent is withdrawn or the purpose is served.<span class="src">DPDP Act, 2023 · DPDP Rules, 2025</span></td>
+                <td>Nothing automatic. VICT can't reach into a vendor's systems.</td>
+                <td>Every vendor that received a given borrower's data, so you know whom to ask.</td>
+                <td><span class="tag tag-bad">Not covered</span></td>
+              </tr>
+              <tr>
+                <td>Report personal data breaches to the Data Protection Board and affected people.<span class="src">DPDP Rules, 2025</span></td>
+                <td>No breach detection or reporting workflow.</td>
+                <td>A tamper-evident record of which data went where, and when.</td>
+                <td><span class="tag tag-info">Evidence</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="questions-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">At audit time</p>
+          <h2 id="questions-title">Questions you'll be asked, <em>and where the answer is.</em></h2>
+          <p class="lede" style="margin-top: 14px;">Each answer is a filter over the ledger, not a document someone wrote after the fact.</p>
+        </div>
+        <div class="faq" data-reveal>
+          <details>
+            <summary>Show me every vendor that received this borrower's data.</summary>
+            <div class="answer">Filter the ledger for the borrower's ID and <code>egress-allowed</code>. Each line names the host, the purpose and the time. Blocked attempts are there too.</div>
+          </details>
+          <details>
+            <summary>Prove marketing never used loan-eligibility consent.</summary>
+            <div class="answer">Every attempt to call a vendor for <code>marketing</code> without a marketing consent is a <code>token-denied</code> entry. No token was issued, so no connection exists to explain.</div>
+          </details>
+          <details>
+            <summary>What happened after the borrower withdrew?</summary>
+            <div class="answer">The withdrawal is followed by <code>consent-withdrawn</code> blocks for any new call, and a <code>tunnel-closed</code> entry for each open connection, with the bytes sent and received before the cut.</div>
+          </details>
+          <details>
+            <summary>Did any borrower data go abroad?</summary>
+            <div class="answer">Allowed entries only ever name hosts on the vendor list. Attempts to reach anything else are <code>host-not-allow-listed</code> blocks. Whether a listed vendor stores data in India is still a contractual question.</div>
+          </details>
+          <details>
+            <summary>How do we know the LSP didn't edit this log?</summary>
+            <div class="answer">The NBFC's witness has held signed checkpoints of it all along. If witnessed history had changed, the witness would have raised an alarm that can't be cleared quietly. <a href="nbfc.html">How the witness works</a>.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="sources-title">
+      <div class="container">
+        <h2 id="sources-title" style="font-size: 1.4rem; margin-bottom: 14px;">Sources</h2>
+        <ul class="small muted" style="padding-left: 18px; display: grid; gap: 8px; max-width: 900px;">
+          <li>RBI, Storage of Payment System Data, RBI/2017-18/153, 6 April 2018 (<a href="https://www.ikigailaw.com/article/450/data-localisation-in-the-payment-ecosystem" rel="noopener">summary</a>)</li>
+          <li>Reserve Bank of India (Digital Lending) Directions, 2025, 8 May 2025: data stored in India; data processed abroad deleted there and brought back within 24 hours (<a href="https://corporate.cyrilamarchandblogs.com/2025/05/fig-paper-no-44-series-3-rbi-consolidates-directions-on-digital-lending-implications-for-res-lsps/" rel="noopener">analysis</a>)</li>
+          <li>Digital Personal Data Protection Rules, 2025, notified 13 November 2025; most obligations from 13 May 2027 (<a href="https://www.enterpriseitworld.com/the-dpdp-act-2023-and-dpdp-rules-2025-timeline-for-implimentation/" rel="noopener">timeline</a>)</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="index.html" aria-label="VICT home">
+            <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+            <span class="logo-word">VICT</span>
+          </a>
+          <p style="margin-top: 12px; max-width: 38ch;">A free, open-source egress gate for India's digital lenders. Runs in your own AWS Mumbai account.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="demo.html">Live demo</a></li>
+            <li><a href="nbfc.html">For NBFCs</a></li>
+            <li><a href="self-host.html">Self-host</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rules</h4>
+          <ul>
+            <li><a href="regulation.html">RBI &amp; DPDP map</a></li>
+            <li><a href="regulation.html#timeline">Deadlines</a></li>
+            <li><a href="VICT-Technical-Whitepaper.txt">Whitepaper (txt)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Code</h4>
+          <ul>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/blob/main/docs/PRODUCTION_READINESS.md" rel="noopener">Production readiness</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/issues" rel="noopener">Report an issue</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>Plain-language summaries of RBI and DPDP rules, not legal advice.</span>
+        <span>Demo vendors are stand-ins. No real borrower data is processed.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+  <script>
+    // Place "today" between the two milestones it falls between.
+    (function () {
+      const events = [...document.querySelectorAll('.timeline-event')];
+      const marker = document.getElementById('timeline-today');
+      const now = Date.now();
+      for (let i = 0; i < events.length - 1; i += 1) {
+        const a = Date.parse(events[i].dataset.date);
+        const b = Date.parse(events[i + 1].dataset.date);
+        if (now >= a && now <= b) {
+          const left = parseFloat(events[i].style.left);
+          const right = parseFloat(events[i + 1].style.left);
+          marker.style.left = `${left + ((now - a) / (b - a)) * (right - left)}%`;
+          return;
+        }
+      }
+      if (now > Date.parse(events[events.length - 1].dataset.date)) marker.style.left = '97%';
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Self-host · VICT</title>
+  <meta name="description" content="Run VICT in your own AWS Mumbai account. No licence fee, no hosted service, no telemetry. What works today, what it costs, and its limits." />
+  <meta name="vict-api-base" content="https://sovereign-portal.onrender.com" />
+  <meta name="theme-color" content="#f4efe4" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="logo" href="index.html" aria-label="VICT home">
+        <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+        <span class="logo-word">VICT</span><span class="logo-sub">egress gate</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="nbfc.html">For NBFCs</a>
+        <a href="regulation.html">RBI &amp; DPDP</a>
+        <a href="self-host.html" aria-current="page">Self-host</a>
+        <a class="btn btn-small" href="demo.html">Live demo</a>
+      </nav>
+    </div>
+    <div class="ticker">
+      <div class="container ticker-row">
+        <span class="live-dot" id="ticker-dot"></span>
+        <span class="ticker-label">Demo gateway</span>
+        <span class="ticker-text" id="ticker-text">Connecting…</span>
+        <a href="demo.html#ledger" class="small">Open the ledger →</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero ledger-paper">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Self-host <span class="deva" lang="hi">अपना सर्वर</span></p>
+          <h1>Free. Yours. <em>In Mumbai.</em></h1>
+          <p class="lede">
+            There is no VICT cloud. You run it in your own AWS <code>ap-south-1</code> account, so borrower data never passes through a third party, including us.
+            No licence fee, no telemetry, nothing that phones home.
+          </p>
+        </div>
+        <div class="note note-green" data-reveal>
+          <strong>Where it stands.</strong> The core is built and tested: consent tokens, the egress proxy, the hash-chained ledger and the NBFC witness.
+          Packaging them as separate production services is in progress, and design partners decide what comes first.
+          <a href="#roadmap">What's left</a>.
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container steps">
+        <article class="step" data-reveal>
+          <span class="step-n">1</span>
+          <div>
+            <h3>Run it on your laptop</h3>
+            <p>The gateway, consent authority, proxy, ledger and witness all start in one process, with stand-in vendors. Point this site at it with <code>?api=</code> and every page talks to your copy.</p>
+            <p class="small faint">Works today.</p>
+          </div>
+          <div class="code">
+            <div class="code-bar"><span>Terminal</span><button type="button" class="copy-btn">Copy</button></div>
+<pre><code>git clone https://github.com/Jos-zenith/Sovereign-Portal
+cd Sovereign-Portal
+python -m pip install -r src/requirements.txt
+uvicorn src.gateway.consent_gateway:app --port 8080
+
+<span class="c"># in a second terminal</span>
+python -m http.server 5500 --directory demo/portal
+<span class="c"># open http://127.0.0.1:5500</span></code></pre>
+          </div>
+        </article>
+
+        <article class="step" data-reveal>
+          <span class="step-n">2</span>
+          <div>
+            <h3>Read the tests, then run them</h3>
+            <p>The egress test suite is the specification: raw CONNECT requests for every block reason, bureau-style mTLS through the proxy, mid-stream withdrawal, audit-write failures, and a witness against an honest and a dishonest LSP.</p>
+            <p class="small faint">Works today.</p>
+          </div>
+          <div class="code">
+            <div class="code-bar"><span>Terminal</span><button type="button" class="copy-btn">Copy</button></div>
+<pre><code>python -m pip install -r requirements-dev.txt httpx
+python -m pytest tests/egress -q</code></pre>
+          </div>
+        </article>
+
+        <article class="step" data-reveal>
+          <span class="step-n">3</span>
+          <div>
+            <h3>Lock down the network</h3>
+            <p>Apply the <code>egress_lockdown</code> Terraform module to your app subnets, then run <code>verify_lockdown.sh</code> on an app instance. Direct HTTPS, raw-IP and plain HTTP must all fail, and the proxy must ask for a token.</p>
+            <p class="small faint">Validated with offline Terraform tests. Not yet applied to a real AWS account.</p>
+          </div>
+          <div class="code">
+            <div class="code-bar"><span>Terminal</span><button type="button" class="copy-btn">Copy</button></div>
+<pre><code>cd infra/terraform
+terraform init
+terraform plan -var="region=ap-south-1"
+
+<span class="c"># on an app instance, after apply</span>
+./modules/egress_lockdown/verify_lockdown.sh &lt;proxy&gt;:3128</code></pre>
+          </div>
+        </article>
+
+        <article class="step" data-reveal>
+          <span class="step-n">4</span>
+          <div>
+            <h3>Hand your NBFC the witness</h3>
+            <p>Give them your checkpoint public key and your gateway URL. They run one process on their side; it never receives borrower data.</p>
+            <p class="small faint">Works today. <a href="nbfc.html">What the NBFC sees</a>.</p>
+          </div>
+          <div class="code">
+            <div class="code-bar"><span>At the NBFC</span><button type="button" class="copy-btn">Copy</button></div>
+<pre><code>python -m src.egress.witness \
+    --lsp-url https://vict.your-lsp.in \
+    --lsp-id your-lsp \
+    --public-key lsp-checkpoint.pub.pem \
+    --state witness-state.json --interval 10</code></pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="cost-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">What it costs</p>
+          <h2 id="cost-title">₹0 to us. <em>Your AWS bill, no surprises.</em></h2>
+          <p class="lede" style="margin-top: 14px;">VICT has no licence fee. AWS charges you for what you run, and we point out the line items in advance.</p>
+        </div>
+        <div class="table-wrap" data-reveal>
+          <table>
+            <thead><tr><th>Item</th><th>Cost</th></tr></thead>
+            <tbody>
+              <tr><td>VICT itself</td><td><span class="tag tag-good">Free</span></td></tr>
+              <tr><td>Route tables, network ACLs, security groups</td><td><span class="tag tag-good">Free in AWS</span></td></tr>
+              <tr><td>S3 gateway endpoint, for AWS APIs without internet</td><td><span class="tag tag-good">Free in AWS</span></td></tr>
+              <tr><td>Instances for the gateway and proxy</td><td><span class="tag tag-warn">AWS bills</span> <span class="small muted">Check your free-tier eligibility.</span></td></tr>
+              <tr><td>The proxy's Elastic IP</td><td><span class="tag tag-warn">AWS bills</span> <span class="small muted">Public IPv4 is charged hourly.</span></td></tr>
+              <tr><td>Route 53 Resolver DNS Firewall (closes the DNS gap)</td><td><span class="tag tag-warn">Optional, paid</span></td></tr>
+              <tr><td>NAT gateway</td><td><span class="tag">Avoided on purpose</span> <span class="small muted">Hourly plus per GB.</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="roadmap" aria-labelledby="roadmap-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">Before production</p>
+          <h2 id="roadmap-title">What's left <em>to build.</em></h2>
+          <p class="lede" style="margin-top: 14px;">Straight from the repository's production-readiness notes.</p>
+        </div>
+        <ul class="checklist cross" data-reveal style="gap: 14px;">
+          <li><strong>Consent authority as its own service.</strong> Today it runs inside the gateway. App code must never hold the token-signing key, and withdrawals need a push channel to the proxy.</li>
+          <li><strong>Durable ledger storage.</strong> The demo writes to temporary files. An S3 bucket with Object Lock is the natural home.</li>
+          <li><strong>Key management.</strong> Generate the checkpoint key at install, keep it in AWS KMS or Secrets Manager, and agree a rotation procedure with the NBFC.</li>
+          <li><strong>NBFC counter-signatures,</strong> so the LSP also holds proof of what was witnessed.</li>
+          <li><strong>A first run in a real AWS Mumbai account,</strong> with <code>verify_lockdown.sh</code> passing.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="limits" aria-labelledby="limits-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">No fine print</p>
+          <h2 id="limits-title">Limits, <em>stated up front.</em></h2>
+        </div>
+        <ul class="checklist cross" data-reveal style="gap: 14px;">
+          <li><strong>Vendors' storage location.</strong> The allow-list controls hostnames, not data centres. A vendor's data residency is its contractual promise.</li>
+          <li><strong>Erasure.</strong> Withdrawing consent stops future calls and cuts open ones. Erasing data a vendor already holds is still the lender's job; the ledger shows who received it.</li>
+          <li><strong>Completeness.</strong> The NBFC witness proves witnessed history wasn't changed. Network lockdown is what makes an unlogged call hard to arrange.</li>
+          <li><strong>DNS.</strong> Compromised code could leak small amounts of data through DNS lookups until DNS Firewall is turned on.</li>
+          <li><strong>Withdrawals across services.</strong> They cut open connections within a second while the consent store runs inside the proxy's process. A separate consent service will need to push them.</li>
+          <li><strong>Real bureaus and AAs.</strong> The public demo answers every vendor with a local stand-in.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="faq-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">Questions</p>
+          <h2 id="faq-title">Asked by <em>LSP engineers.</em></h2>
+        </div>
+        <div class="faq" data-reveal>
+          <details>
+            <summary>Do you ever see our borrowers' data?</summary>
+            <div class="answer">No. There is no hosted service and no telemetry. You run every component, and the NBFC's witness only receives hashes. The public demo uses stand-in vendors and made-up borrower IDs.</div>
+          </details>
+          <details>
+            <summary>Does it replace our consent manager or Account Aggregator?</summary>
+            <div class="answer">No. VICT enforces the consent you already collect at the moment data would leave your servers. It isn't a DPDP consent manager or an AA, and it works alongside both.</div>
+          </details>
+          <details>
+            <summary>Will it slow down underwriting?</summary>
+            <div class="answer">It adds one token request and one proxy handshake per vendor session, inside your own VPC. Ledger writes happen off the request path. The ledger handles about 3,000 entries per second on a laptop, against roughly 5 per second for 100,000 loan calls a day.</div>
+          </details>
+          <details>
+            <summary>Which languages are supported?</summary>
+            <div class="answer">There's a Python SDK today. The proxy speaks standard HTTPS <code>CONNECT</code>, so any client that supports a proxy can use it once the consent authority runs as its own service and hands out tokens over the network.</div>
+          </details>
+          <details>
+            <summary>Does running VICT make us compliant?</summary>
+            <div class="answer">No tool can promise that. VICT enforces and evidences specific obligations about outbound data, and the <a href="regulation.html">rule map</a> says which ones. The rest of compliance is still yours.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+        <div class="cta-panel" data-reveal>
+          <div>
+            <p class="eyebrow">Design partners wanted</p>
+            <h2>Be one of the first LSPs to run it.</h2>
+            <p>We'll help you set it up in your AWS Mumbai account, on your traffic, with your NBFC partner running the witness.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn" href="https://github.com/Jos-zenith/Sovereign-Portal/issues/new?title=Pilot%20request" rel="noopener">Request a pilot</a>
+            <a class="btn btn-ghost" href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">Read the code</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="index.html" aria-label="VICT home">
+            <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+            <span class="logo-word">VICT</span>
+          </a>
+          <p style="margin-top: 12px; max-width: 38ch;">A free, open-source egress gate for India's digital lenders. Runs in your own AWS Mumbai account.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="demo.html">Live demo</a></li>
+            <li><a href="nbfc.html">For NBFCs</a></li>
+            <li><a href="self-host.html">Self-host</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rules</h4>
+          <ul>
+            <li><a href="regulation.html">RBI &amp; DPDP map</a></li>
+            <li><a href="regulation.html#timeline">Deadlines</a></li>
+            <li><a href="VICT-Technical-Whitepaper.txt">Whitepaper (txt)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Code</h4>
+          <ul>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/blob/main/docs/PRODUCTION_READINESS.md" rel="noopener">Production readiness</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/issues" rel="noopener">Report an issue</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>Plain-language summaries of RBI and DPDP rules, not legal advice.</span>
+        <span>Demo vendors are stand-ins. No real borrower data is processed.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>

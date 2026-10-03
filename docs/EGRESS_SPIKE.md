@@ -8,7 +8,7 @@
 
 ```bash
 python -m pip install -r requirements-dev.txt
-python -m pytest -q             # 36 tests, about 20 seconds
+python -m pytest -q             # 54 tests, about 20 seconds
 python demo/egress_spike_demo.py
 ```
 
@@ -40,7 +40,8 @@ App code ── SDK: session(borrower, purpose, hosts)
 | [src/egress/consent.py](../src/egress/consent.py) | Consent store keyed on (LSP, borrower, purpose); the authority that issues tokens |
 | [src/egress/proxy.py](../src/egress/proxy.py) | CONNECT-only proxy |
 | [src/egress/policy.py](../src/egress/policy.py), [compliance/egress_policy.rego](../compliance/egress_policy.rego) | Same rules in Python (default) and OPA |
-| [src/egress/audit.py](../src/egress/audit.py) | Hash-chained log, checkpoints, witness-side verification |
+| [src/egress/audit.py](../src/egress/audit.py) | Hash-chained log; each link is sha256(previous head ‖ record digest) |
+| [src/egress/checkpoint.py](../src/egress/checkpoint.py), [src/egress/witness.py](../src/egress/witness.py) | Ed25519-signed checkpoints and the NBFC-side witness that pulls them |
 | [src/egress/sdk.py](../src/egress/sdk.py) | `VictEgress.session(...)` over `requests` |
 
 ## Pass criteria
@@ -67,9 +68,8 @@ App code ── SDK: session(borrower, purpose, hosts)
 
 ## Not tested yet
 
-- **Calls that skip the proxy.** These must fail at the network: in AWS, security groups that only allow egress to the proxy; locally, a Docker network with no outside access. This is the next spike.
+- **Calls that skip the proxy on real infrastructure.** The [egress_lockdown](../infra/terraform/modules/egress_lockdown) Terraform module passes offline tests but has not been applied to AWS yet. See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md).
 - **Real AA and bureau sandboxes.** The likely snag is their IP allow-lists: the proxy must leave through the LSP's already-whitelisted address.
 - **Envoy or Squid as the production proxy.** The asyncio proxy is good enough to test the design, but it is not hardened.
 - **Authority as a separate service.** In the spike the authority runs inside the app's process. In production it must be its own service, so app code never holds the signing key.
-- **Pushing checkpoints to the NBFC.** `AuditLog.checkpoint()` produces the value; nothing sends it yet.
 - **Node and Java SDKs.** Node's built-in `fetch` honours `HTTPS_PROXY` only from v22.21 / v24.5 with `NODE_USE_ENV_PROXY=1`.

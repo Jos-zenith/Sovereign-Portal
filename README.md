@@ -77,12 +77,30 @@ uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port 8080
 
 The consent database is auto-initialized on startup (default path: `vict-consent.db`).
 
-## Unified Sovereign Portal (Demo)
+## Portal (Demo)
 
-Open `demo/portal/index.html` in a browser to view the three-role interface:
-- Developer Co-pilot
-- Auditor Command Dashboard
-- Citizen Consent Vault
+`demo/portal/` is the public site, aimed at digital-lending LSPs and their NBFC partners. It is static HTML, CSS and JS with no build step:
+
+| Page | What it's for |
+|---|---|
+| `index.html` | Home: animated flow, DPDP countdown, live loan-file simulator, rejection slips |
+| `demo.html` | Seven "try to break it" missions, including withdrawing consent mid-stream and rewriting the log as a dishonest LSP; consent vault, NBFC evidence and the audit ledger |
+| `how-it-works.html` | Consent tokens, the proxy, network lockdown, the witnessed ledger, code samples |
+| `nbfc.html` | For NBFC risk teams: what the witness checks, proves and doesn't prove |
+| `regulation.html` | RBI Digital Lending Directions and DPDP obligations mapped to what VICT enforces |
+| `self-host.html` | Running it in AWS Mumbai, costs, what's left to build, limits, FAQ |
+
+Shared code lives in `demo/portal/assets/`. Every live number comes from the running gateway's `/egress/*` API; the vendors are local stand-ins, so no data leaves the server.
+
+Run it locally:
+
+```bash
+python -m pip install -r src/requirements.txt
+uvicorn src.gateway.consent_gateway:app --host 127.0.0.1 --port 8080
+python -m http.server 5500 --directory demo/portal
+```
+
+Open http://127.0.0.1:5500. Elsewhere the page uses the `vict-api-base` meta tag, or `?api=<url>` to point at any gateway. The previous portal is kept in `demo/portal-legacy/` and is not deployed.
 
 ## Deploy Backend on Render (for Vercel frontend)
 
@@ -100,6 +118,7 @@ Open `demo/portal/index.html` in a browser to view the three-role interface:
 Note:
 - The repo pins Python via `runtime.txt` (`python-3.11.10`) to avoid `pydantic-core` build failures on unsupported preview runtimes.
 - If Render still builds with `python3.14`, set `PYTHON_VERSION=3.11.10` in Render Environment, then redeploy with "Clear build cache".
+- The portal's demo state (consents, audit log) lives in temporary files, so it starts fresh whenever the free instance sleeps and wakes.
 
 Then update frontend API config in `demo/portal/index.html`:
 
@@ -117,19 +136,13 @@ python src/vict_cli.py wrap demo/sample_function.py --out dist
 python src/vict_cli.py deploy --region ap-south-1 --workspace .
 ```
 
-## Live Consent + Audit Demo
+## Live Demo Walkthrough
 
-1. Start gateway:
-
-```bash
-set VICT_DEMO_SKIP_WASM=true
-uvicorn src.gateway.consent_gateway:app --host 0.0.0.0 --port 8080
-```
-
-2. Open `demo/portal/index.html` and use Citizen "Agree" / "Deny".
-3. In Developer panel, click `Run Function Demo` to see ALLOWED/BLOCKED runtime result.
-4. Switch to Auditor panel to see live `/audit/recent` updates and heartbeat counters.
-5. In Developer panel, click `Simulate US Egress Breach` to trigger a visible red RBI localization denial banner.
+1. Start the gateway and portal as above.
+2. LSP developer: run "Eligibility check to the bureau" (allowed), then "Same check for borrower-002" (blocked before any network call).
+3. Run "Analytics SDK sends data to analytics.example.com": the egress proxy blocks it because the host is not allow-listed.
+4. Borrower: withdraw borrower-001's loan-eligibility consent and run the eligibility check again (blocked: consent-withdrawn).
+5. NBFC partner: send a checkpoint, then press "Act as a dishonest LSP". The rebuilt chain still verifies, but the NBFC's checkpoint no longer matches.
 
 ## Hackathon MVP Scope (Hardened PoC)
 
@@ -153,7 +166,7 @@ python -m pytest -q
 python demo/egress_spike_demo.py
 ```
 
-Design, pass criteria and open gaps are in [docs/EGRESS_SPIKE.md](docs/EGRESS_SPIKE.md).
+Design, pass criteria and open gaps are in [docs/EGRESS_SPIKE.md](docs/EGRESS_SPIKE.md). Infrastructure lockdown, log throughput and NBFC checkpointing are in [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md).
 
 ## IDE Plugin Direction
 

@@ -1,354 +1,427 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VICT Sovereign Security OS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VICT · Consent-gated egress for digital lenders</title>
+  <meta name="description" content="Free, self-hosted egress gate for Indian digital lending apps. Every outbound call carries the borrower's consent, goes only to approved vendors, and lands in a log the NBFC partner verifies." />
   <meta name="vict-api-base" content="https://sovereign-portal.onrender.com" />
+  <meta name="theme-color" content="#f4efe4" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
 </head>
 <body>
-  <div class="bg-grid"></div>
-  <header class="topbar">
-    <div class="logo-wrap">
-      <span class="logo-dot"></span>
-      <div>
-        <p class="kicker">Validated Identity & Compliance Trust-layer</p>
-        <h1>VICT Sovereign Security OS</h1>
-      </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="logo" href="index.html" aria-label="VICT home">
+        <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+        <span class="logo-word">VICT</span><span class="logo-sub">egress gate</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="nbfc.html">For NBFCs</a>
+        <a href="regulation.html">RBI &amp; DPDP</a>
+        <a href="self-host.html">Self-host</a>
+        <a class="btn btn-small" href="demo.html">Live demo</a>
+      </nav>
     </div>
-    <div class="status-pills">
-      <span class="pill green">DPDP: Enforced</span>
-      <span class="pill blue">RBI: Localized</span>
-      <span class="pill amber" id="threat-pill">Threat Level: Guarded</span>
-      <span class="pill blue" id="live-clock">Sync: --:--:--</span>
+    <div class="ticker">
+      <div class="container ticker-row">
+        <span class="live-dot" id="ticker-dot"></span>
+        <span class="ticker-label">Demo gateway</span>
+        <span class="ticker-text" id="ticker-text">Connecting…</span>
+        <a href="demo.html#ledger" class="small">Open the ledger →</a>
+      </div>
     </div>
   </header>
 
-  <section class="live-feed" aria-live="polite">
-    <span class="feed-label">Live Sovereignty Feed</span>
-    <p id="feed-line">Initializing compliance telemetry...</p>
-  </section>
-
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="kicker">Track 7: Serverless Security</p>
-      <h2>Sovereign Serverless Security for India's Digital Frontier.</h2>
-      <p class="hero-sub">VICT is a zero-trust execution layer that enforces DPDP compliance at the kernel level. Stop data violations before the first line of code even runs.</p>
-      <div class="hero-actions">
-        <a class="action cta" href="./VICT-Technical-Whitepaper.txt" download>Download Technical Whitepaper</a>
-      </div>
-    </div>
-    <div class="hero-visual card">
-      <h3>Interactive Terminal</h3>
-      <div class="terminal hero-terminal" id="hero-terminal">
-        <p><span>&gt;</span> vict deploy --function processPayments</p>
-        <p class="hero-line">[SCANNING...]</p>
-        <p class="hero-line warn">[!] VIOLATION FOUND: Function 'processPayments' makes an external API call to 'us-east-1'.</p>
-        <p class="hero-line warn">[!] ACTION: Geofence enforced. Diverting traffic to 'ap-south-1' (Mumbai).</p>
-        <p class="hero-line ok">[STATUS] Function Hardened and Deployed.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="card statement">
-    <h3>Problem Statement</h3>
-    <p>Every serverless function in India that touches personal or payment data is one misconfigured IAM policy, one missing consent check, or one non-India API call away from a DPDP violation - and no existing FaaS platform enforces these rules automatically at runtime.</p>
-    <p>VICT is a sovereign serverless security layer that intercepts every function invocation before execution, enforces citizen consent in real-time, blocks data from leaving India at the kernel level using eBPF, and generates a tamper-proof forensic trail - turning DPDP compliance from a quarterly audit into a continuous, automated guarantee.</p>
-  </section>
-
-  <section class="feature-grid">
-    <article class="card feature triple-engine">
-      <h3>Triple-Engine: Secret Sauce</h3>
-      <p>Three controls work together so compliance is runtime behavior, not post-incident paperwork.</p>
-    </article>
-    <article class="card feature triple-engine">
-      <h3>Wasm Sandbox</h3>
-      <p>We compile logic into WebAssembly modules. It's 100x faster than Docker and mathematically isolated.</p>
-    </article>
-    <article class="card feature triple-engine">
-      <h3>eBPF Guardrails</h3>
-      <p>We use kernel-level tracing to block unauthorized network calls. If the code tries to leak data, the kernel kills the process before the packet leaves.</p>
-    </article>
-    <article class="card feature triple-engine">
-      <h3>Consent Gateway</h3>
-      <p>A zero-trust interceptor that checks for DPDP-compliant user consent before the first line of code executes.</p>
-    </article>
-    <article class="card feature">
-      <h3>Shield Real-Time Consent (DPDP)</h3>
-      <p>Intercepts invocations to verify Data Principal consent via a secure Identity Bridge.</p>
-    </article>
-    <article class="card feature">
-      <h3>Map Kernel-Level Geofencing (RBI)</h3>
-      <p>Uses eBPF to block non-India API calls at the OS level, ensuring data never leaves the territory.</p>
-    </article>
-    <article class="card feature">
-      <h3>Gavel Automated Forensics</h3>
-      <p>Generates audit-ready logs that meet the 72-hour breach reporting requirement of the DPDP Act.</p>
-    </article>
-  </section>
-
-  <section class="card technical-edge-center">
-    <h3>Technical Edge: Isolation + Enforcement + Consent</h3>
-    <div class="edge-columns">
-      <article class="edge-card">
-        <h4>Wasm Sandbox (Isolation Win)</h4>
-        <p>Standard containers have a 3,000ms attack surface. VICT uses Wasm sandboxes with &lt;1ms cold starts, reducing the window for exploitation to near zero.</p>
-      </article>
-      <article class="edge-card">
-        <h4>eBPF Enforcement (Geofencing Win)</h4>
-        <div class="terminal edge-terminal" id="ebpf-stream">
-          <p><span>&gt;</span> [VICT] eBPF stream initialized</p>
-        </div>
-      </article>
-      <article class="edge-card">
-        <h4>DPDP Consent Gateway</h4>
-        <p>Click revoke to simulate zero-trust interception before execution.</p>
-        <div class="mock-function" id="mock-function-state">
-          <p class="status running" id="mock-status">MOCK FUNCTION: RUNNING</p>
-          <p id="mock-detail">Consent valid. Execution allowed.</p>
-        </div>
-        <button class="danger" id="edge-revoke-consent">Revoke Consent</button>
-      </article>
-    </div>
-  </section>
-
-  <section class="card compliance-dashboard">
-    <h3>Compliance-as-a-Service Dashboard</h3>
-    <div class="dashboard-grid-wide">
-      <article class="dash-card">
-        <h4>Trust Score</h4>
-        <div class="dial-wrap">
-          <svg class="trust-dial" viewBox="0 0 140 140" aria-label="DPDP trust score dial">
-            <circle cx="70" cy="70" r="54" class="dial-track"></circle>
-            <circle cx="70" cy="70" r="54" class="dial-progress" id="dial-progress"></circle>
-          </svg>
-          <div class="dial-value" id="dial-value">98</div>
-        </div>
-        <p>0-100 real-time confidence based on consent and localization outcomes.</p>
-      </article>
-
-      <article class="dash-card">
-        <h4>Consent Heatmap</h4>
-        <svg class="india-map heatmap" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="Consent heatmap across India">
-          <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
-          <circle class="hotspot high" cx="178" cy="215" r="18"></circle>
-          <circle class="hotspot med" cx="210" cy="125" r="14"></circle>
-          <circle class="hotspot med" cx="225" cy="245" r="12"></circle>
-          <text x="170" y="245">Mumbai: High consent</text>
-          <text x="222" y="128">Delhi: Medium</text>
-          <text x="237" y="249">Hyderabad: Medium</text>
-        </svg>
-      </article>
-
-      <article class="dash-card">
-        <h4>Audit Trail (Tamper-proof -> SigNoz)</h4>
-        <div class="trail-list" id="trail-list">
-          <p>Bootstrapping secure audit stream...</p>
-        </div>
-        <p>Prepared for 72-hour breach reporting evidence workflows.</p>
-      </article>
-    </div>
-  </section>
-
-  <section class="card split-demo">
-    <h3>See VICT in Action</h3>
-    <div class="split-grid">
-      <div class="terminal bad">
-        <p><span>$</span> python function.py --send us-east-1</p>
-        <p class="warn">[VIOLATION] Transfer accepted by default pipeline.</p>
-      </div>
-      <div class="terminal good">
-        <p><span>$</span> vict invoke --region ap-south-1</p>
-        <p class="warn">[VICT-BLOCK] Violation: Cross-border transfer to 'us-east-1' blocked by RBI Policy 4.2</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h3>Compliance Map: Data Residency in India</h3>
-    <div class="map-wrap">
-      <svg class="india-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India compliance map">
-        <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
-        <circle class="city safe" cx="210" cy="125" r="7"></circle>
-        <text x="222" y="129">Delhi</text>
-        <circle class="city safe" cx="178" cy="215" r="7"></circle>
-        <text x="190" y="220">Mumbai</text>
-        <circle class="city safe" cx="225" cy="245" r="7"></circle>
-        <text x="237" y="250">Hyderabad</text>
-      </svg>
-      <div class="map-legend">
-        <p><strong>Sovereign Green:</strong> Authorized India-only processing zones.</p>
-        <p><strong>Regulatory Red:</strong> Any egress outside India is blocked in-kernel.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="card sovereignty-dashboard">
-    <h3>Sovereignty Dashboard (Visual Proof)</h3>
-    <div class="dashboard-grid">
-      <div>
-        <h4>Compliance Map</h4>
-        <svg class="india-map dashboard-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India sovereignty dashboard map">
-          <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
-          <circle class="city safe" cx="210" cy="125" r="7"></circle>
-          <text x="222" y="129">Delhi</text>
-          <circle class="city safe" cx="178" cy="215" r="7"></circle>
-          <text x="206" y="221">Mumbai</text>
-          <g class="shield-icon" transform="translate(158,214)">
-            <path d="M30 6l18 7v14c0 15-10 28-18 33-8-5-18-18-18-33V13l18-7z"></path>
-          </g>
-          <path class="data-line" d="M178 215 C210 190, 220 160, 210 125"></path>
-          <path class="data-line" d="M178 215 C200 230, 220 245, 225 245"></path>
-        </svg>
-      </div>
-      <div class="dashboard-widgets">
-        <div class="metric">
-          <p>DPDP Consent Monitor</p>
-          <h3 id="consent-checks">0</h3>
-          <p>Live Consent Verifications</p>
-        </div>
-        <div class="metric">
-          <p>Localization Status</p>
-          <h3>BORDER LOCKED</h3>
-          <p>Data routes constrained to India regions.</p>
-        </div>
-        <button class="danger" id="emergency-purge">Emergency RBI Compliance Purge</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="card dx">
-    <h3>Deploy with confidence. We handle the sovereignty, you handle the code.</h3>
-    <div class="terminal">
-      <p><span>$</span> vict deploy --region mumbai --rules dpdp-2023</p>
-    </div>
-  </section>
-
-  <nav class="role-nav">
-    <button class="role-btn active" data-role="developer">Developer Co-pilot</button>
-    <button class="role-btn" data-role="auditor">Auditor Command</button>
-    <button class="role-btn" data-role="citizen">Citizen Consent Vault</button>
-  </nav>
-
-  <main>
-    <section class="panel active" id="developer">
-      <div class="panel-grid">
-        <article class="card">
-          <h2>Build-Time Security Co-pilot</h2>
-          <p>Run secure-by-default commands directly in your terminal workflow.</p>
-          <div class="terminal">
-            <p><span>$</span> vict scan src/functions/payment.py</p>
-            <p class="warn">Warning: Data localization violation on line 42 (`api.us-east-1.example.com`).</p>
-            <p><span>$</span> vict wrap src/functions/payment.py --target ap-south-1</p>
-            <p class="ok">Wrapped as Wasm package: dist/payment.wasm.stub</p>
-            <p><span>$</span> vict deploy --region ap-south-1</p>
-            <p class="ok">Least-privilege IAM policy generated and deployment plan created.</p>
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero ledger-paper">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Egress control for India's loan apps <span class="deva" lang="hi">सहमति से</span></p>
+          <h1>Borrower data leaves only <em>with consent.</em></h1>
+          <p class="lede">
+            VICT sits between your lending stack and every bureau, Account Aggregator and SDK it calls.
+            Each outbound call must carry the borrower's consent for one purpose, go to a vendor you approved,
+            and land in a tamper-evident log that your NBFC partner checks for itself.
+          </p>
+          <div class="hero-ctas">
+            <a class="btn" href="demo.html">Try to break it, live <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" href="how-it-works.html">How it works</a>
           </div>
-          <button class="action" id="invoke-demo">Run Function Demo</button>
-          <button class="danger" id="simulate-breach">Simulate US Egress Breach</button>
-          <p id="invoke-result" class="result">Waiting for invoke test...</p>
-          <div id="breach-banner" class="breach-banner" aria-live="polite">[ACCESS DENIED: RBI LOCALIZATION BREACH]</div>
-        </article>
-
-        <article class="card">
-          <h2>IDE Signal Feed</h2>
-          <ul class="issues">
-            <li><strong>Line 42</strong> Non-India endpoint detected for PII payload.</li>
-            <li><strong>Line 78</strong> Wildcard IAM action (`s3:*`) should be narrowed.</li>
-            <li><strong>Line 120</strong> Missing consent check before payment event publish.</li>
+          <ul class="hero-facts">
+            <li>Free &amp; open source</li>
+            <li>Self-hosted in AWS Mumbai</li>
+            <li>₹0 licence, no telemetry</li>
+            <li>NBFC sees hashes, never borrower data</li>
           </ul>
-          <button class="action" id="simulate-fix">Auto-fix Policy Suggestions</button>
-        </article>
-      </div>
-    </section>
+        </div>
 
-    <section class="panel" id="auditor">
-      <div class="panel-grid">
-        <article class="card">
-          <h2>Compliance Heartbeat</h2>
-          <div class="metric-grid">
-            <div class="metric">
-              <p>Trust Score</p>
-              <h3 id="trust-score">98.7</h3>
-            </div>
-            <div class="metric">
-              <p>DPDP Checks</p>
-              <h3>Passing</h3>
-            </div>
-            <div class="metric">
-              <p>RBI Localization</p>
-              <h3>India Only</h3>
-            </div>
-          </div>
-          <div class="heartbeat" id="heartbeat">
-            <div class="hb-stat"><span>Allow</span><strong id="hb-allow">0</strong></div>
-            <div class="hb-stat"><span>Deny</span><strong id="hb-deny">0</strong></div>
-            <div class="hb-stat"><span>Total Events</span><strong id="hb-total">0</strong></div>
-          </div>
-        </article>
+        <figure class="flow-card flow" data-reveal>
+          <figcaption><span>One loan application, four outbound calls</span><span>Illustration</span></figcaption>
+          <svg viewBox="0 0 560 380" role="img" aria-labelledby="flow-title flow-desc">
+            <title id="flow-title">How VICT gates a loan app's outbound calls</title>
+            <desc id="flow-desc">Calls from the loan app pass through the VICT gate. Calls to the credit bureau, Account Aggregator and KYC registry in India are allowed. A call from an analytics SDK to a host abroad is stamped blocked at the gate.</desc>
 
-        <article class="card">
-          <h2>Live Threat Map: India</h2>
-          <svg class="india-map" viewBox="-8 -6 436 432" preserveAspectRatio="xMidYMid meet" aria-label="India data processing map">
-            <path d="M226 36l26 6 20 20 1 20 14 12 8 25 25 27 14 33-10 18 8 22-17 30-4 34-23 18-16 26-26 6-8-20-18-12-34 18-18-10-20-31-16-10-14-27-6-38-19-24-16-51 20-19 2-29 18-26 20 3 18-13 12 2 20-10z"></path>
-            <circle class="city safe" cx="210" cy="125" r="7"></circle>
-            <text x="222" y="129">Delhi</text>
-            <circle class="city safe" cx="178" cy="215" r="7"></circle>
-            <text x="190" y="220">Mumbai</text>
-            <circle class="city safe" cx="225" cy="245" r="7"></circle>
-            <text x="237" y="250">Hyderabad</text>
-            <circle class="city alert" cx="350" cy="68" r="7"></circle>
-            <text x="287" y="90">Blocked: Outside India</text>
+            <!-- Wires -->
+            <path d="M128 194 L232 194" class="s-ink" stroke-width="2" fill="none"/>
+            <path d="M280 194 C320 194 320 59 360 59" class="s-rule" stroke-width="2" fill="none"/>
+            <path d="M280 194 C320 194 320 141 360 141" class="s-rule" stroke-width="2" fill="none"/>
+            <path d="M280 194 C320 194 320 223 360 223" class="s-rule" stroke-width="2" fill="none"/>
+            <path d="M280 194 C320 194 320 305 360 305" class="s-red" stroke-width="2" stroke-dasharray="5 5" fill="none" opacity="0.6"/>
+
+            <!-- Loan app -->
+            <rect x="16" y="96" width="112" height="196" rx="18" class="f-card s-ink" stroke-width="2"/>
+            <rect x="56" y="105" width="32" height="5" rx="2.5" class="f-paper"/>
+            <text x="30" y="138" class="t-sub">PERSONAL LOAN</text>
+            <text x="30" y="164" class="t-label" style="font-family: var(--font-display); font-size: 21px;">₹50,000</text>
+            <rect x="30" y="176" width="84" height="6" rx="3" class="f-paper"/>
+            <rect x="30" y="188" width="58" height="6" rx="3" class="f-paper"/>
+            <rect x="30" y="200" width="70" height="6" rx="3" class="f-paper"/>
+            <rect x="30" y="252" width="84" height="26" rx="13" class="f-ink"/>
+            <text x="72" y="269" text-anchor="middle" class="t-sub" style="fill: var(--on-ink); font-size: 11px;">Apply</text>
+            <text x="72" y="316" text-anchor="middle" class="t-label">Your loan app</text>
+            <text x="72" y="331" text-anchor="middle" class="t-sub">your servers</text>
+
+            <!-- Gate -->
+            <text x="256" y="26" text-anchor="middle" class="t-sub">consent · allow-list · log</text>
+            <rect x="232" y="38" width="48" height="304" rx="10" class="f-ink"/>
+            <text x="256" y="194" text-anchor="middle" class="t-gate" transform="rotate(-90 256 194)" dy="5">VICT GATE</text>
+
+            <!-- Destinations -->
+            <g>
+              <rect x="360" y="30" width="188" height="58" rx="10" class="f-card s-rule" stroke-width="1.5"/>
+              <text x="376" y="55" class="t-label">Credit bureau</text>
+              <text x="376" y="73" class="t-sub">bureau.example.in · India</text>
+              <circle cx="528" cy="59" r="9" class="f-green"/>
+              <path d="M523.5 59 l3 3 l5.5 -6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </g>
+            <g>
+              <rect x="360" y="112" width="188" height="58" rx="10" class="f-card s-rule" stroke-width="1.5"/>
+              <text x="376" y="137" class="t-label">Account Aggregator</text>
+              <text x="376" y="155" class="t-sub">aa.example.in · India</text>
+              <circle cx="528" cy="141" r="9" class="f-green"/>
+              <path d="M523.5 141 l3 3 l5.5 -6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </g>
+            <g>
+              <rect x="360" y="194" width="188" height="58" rx="10" class="f-card s-rule" stroke-width="1.5"/>
+              <text x="376" y="219" class="t-label">KYC registry</text>
+              <text x="376" y="237" class="t-sub">kyc.example.in · India</text>
+              <circle cx="528" cy="223" r="9" class="f-green"/>
+              <path d="M523.5 223 l3 3 l5.5 -6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </g>
+            <g>
+              <rect x="360" y="276" width="188" height="58" rx="10" class="f-card s-red" stroke-width="1.5" stroke-dasharray="5 4"/>
+              <text x="376" y="301" class="t-label t-red">Analytics SDK</text>
+              <text x="376" y="319" class="t-sub">analytics.example.com · abroad</text>
+              <circle cx="528" cy="305" r="9" class="f-red"/>
+              <path d="M524 301 l8 8 M532 301 l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            </g>
+
+            <!-- Packets: three allowed calls, one blocked -->
+            <circle r="6" class="packet f-indigo" opacity="0">
+              <animateMotion dur="8s" begin="0s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.3;1" calcMode="linear" path="M128 194 L280 194 C320 194 320 59 360 59"/>
+              <animate attributeName="opacity" dur="8s" begin="0s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.02;0.28;0.31;1"/>
+            </circle>
+            <circle r="6" class="packet f-indigo" opacity="0">
+              <animateMotion dur="8s" begin="2s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.3;1" calcMode="linear" path="M128 194 L280 194 C320 194 320 141 360 141"/>
+              <animate attributeName="opacity" dur="8s" begin="2s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.02;0.28;0.31;1"/>
+            </circle>
+            <circle r="6" class="packet f-indigo" opacity="0">
+              <animateMotion dur="8s" begin="4s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.3;1" calcMode="linear" path="M128 194 L280 194 C320 194 320 223 360 223"/>
+              <animate attributeName="opacity" dur="8s" begin="4s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.02;0.28;0.31;1"/>
+            </circle>
+            <circle r="6" class="packet f-red" opacity="0">
+              <animateMotion dur="8s" begin="6s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.2;1" calcMode="linear" path="M128 194 L230 194"/>
+              <animate attributeName="opacity" dur="8s" begin="6s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.02;0.19;0.21;1"/>
+            </circle>
+            <circle cx="232" cy="194" r="8" fill="none" class="flash s-red" stroke-width="2" opacity="0">
+              <animate attributeName="r" dur="8s" begin="6s" repeatCount="indefinite" values="6;6;22;22" keyTimes="0;0.2;0.32;1"/>
+              <animate attributeName="opacity" dur="8s" begin="6s" repeatCount="indefinite" values="0;0;1;0;0" keyTimes="0;0.19;0.21;0.32;1"/>
+            </circle>
+            <g class="flash" opacity="0" transform="rotate(-8 256 250)">
+              <rect x="206" y="236" width="100" height="28" rx="4" class="f-card s-red" stroke-width="2.5"/>
+              <text x="256" y="255" text-anchor="middle" class="t-stamp">BLOCKED</text>
+              <animate attributeName="opacity" dur="8s" begin="6s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.19;0.21;0.44;0.5;1"/>
+            </g>
           </svg>
-          <button class="danger" id="kill-switch">Revoke RBI Compliance (Kill-Switch Demo)</button>
-        </article>
+        </figure>
       </div>
-      <article class="card full">
-        <h2>Forensic Drill-Down</h2>
-        <div class="trace" id="audit-feed">
-          <p>Waiting for live audit events from gateway...</p>
-        </div>
-      </article>
     </section>
 
-    <section class="panel" id="citizen">
-      <article class="card full mobile-card">
-        <h2>Consent Vault</h2>
-        <p class="simple">You control every data permission. Revoke anytime with one tap.</p>
-        <div class="consent-list">
-          <div class="consent-item">
-            <div>
-              <h4>Location for GST Calculation</h4>
-              <p>Granted to: FintechTax App</p>
-            </div>
-            <button class="action revoke" data-principal="citizen-001" data-purpose="gst-location">One-Click Revoke</button>
-          </div>
-          <div class="consent-item">
-            <div>
-              <h4>UPI Transaction Metadata</h4>
-              <p>Granted to: SmartLedger</p>
-            </div>
-            <button class="action revoke" data-principal="citizen-001" data-purpose="upi-metadata">One-Click Revoke</button>
-          </div>
-        </div>
-      </article>
+    <!-- Deadline -->
+    <section class="deadline" aria-labelledby="deadline-title">
+      <div class="container deadline-row">
+        <div class="deadline-num"><span data-countdown="2027-05-13">–</span><small>days left</small></div>
+        <p>
+          <strong id="deadline-title">13 May 2027: most DPDP obligations apply.</strong>
+          From then, a borrower's withdrawal has to stop the processing, and you have to show which consent covered which use.
+          RBI's Digital Lending Directions, 2025 already keep your NBFC partner responsible for what your app does with borrower data.
+        </p>
+        <a class="btn" href="regulation.html">See the rule-by-rule map</a>
+      </div>
+    </section>
 
-      <article class="card full">
-        <h2>Contextual Consent Popup Demo</h2>
-        <p class="simple">"This function needs your location to calculate GST. Do you agree?"</p>
-        <div class="popup-actions">
-          <button class="action" id="agree">Agree</button>
-          <button class="danger" id="deny">Deny</button>
+    <!-- Three parties -->
+    <section class="section" aria-labelledby="parties-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Three parties <span class="deva" lang="hi">एक बही</span></p>
+          <h2 id="parties-title">Three parties, <em>one ledger.</em></h2>
+          <p>A digital loan touches the borrower, the app that runs it and the NBFC that funds it. VICT gives each of them something they can check, instead of something they're told.</p>
         </div>
-        <p id="consent-result" class="result">Waiting for user response...</p>
-      </article>
+        <div class="grid-3">
+          <article class="card role-card" data-reveal>
+            <span class="role-word" lang="hi" aria-hidden="true">सहमति</span>
+            <p class="role">Borrower</p>
+            <h3>Says yes for one purpose, and can take it back.</h3>
+            <ul>
+              <li>Consent is per lender and per purpose. A loan check is not a marketing list.</li>
+              <li>Withdrawing cuts connections that are already open, within a second.</li>
+              <li>Every use of their data is a line in the ledger.</li>
+            </ul>
+          </article>
+          <article class="card role-card" data-reveal>
+            <span class="role-word" lang="hi" aria-hidden="true">नियंत्रण</span>
+            <p class="role">LSP · your loan app</p>
+            <h3>Compliance lives in the network path, not a spreadsheet.</h3>
+            <ul>
+              <li>One SDK call wraps each vendor request.</li>
+              <li>Bureau mTLS and signed AA payloads pass through untouched.</li>
+              <li>A rogue SDK or a mistyped host is blocked on the spot, not found in an audit.</li>
+            </ul>
+          </article>
+          <article class="card role-card" data-reveal>
+            <span class="role-word" lang="hi" aria-hidden="true">साक्ष्य</span>
+            <p class="role">NBFC partner</p>
+            <h3>Checks the LSP's log for itself.</h3>
+            <ul>
+              <li>Pulls a signed checkpoint every few seconds.</li>
+              <li>Receives hashes only, never borrower data.</li>
+              <li>Raises an alarm the moment history is rewritten.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Simulator -->
+    <section class="section section-alt" aria-labelledby="sim-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Live, not a video</p>
+          <h2 id="sim-title">Pick what the app does next. <em>See where it stops.</em></h2>
+          <p>Each choice runs the real consent authority and egress proxy on the demo gateway. The vendors are stand-ins, so no data leaves the server. The demo is shared, so you may see other visitors' calls in the ledger.</p>
+        </div>
+
+        <div class="sim" data-reveal>
+          <div class="sim-file">
+            <div class="sim-file-head">
+              <h3>Loan file</h3>
+              <span>LSP: lsp-demo</span>
+            </div>
+            <dl>
+              <dt>Applicant</dt><dd>borrower-001</dd>
+              <dt>Consent on file</dt><dd>loan-eligibility</dd>
+              <dt>Approved vendors</dt><dd>bureau · aa · kyc .example.in</dd>
+            </dl>
+            <div class="choice-list" id="sim-choices"></div>
+          </div>
+          <div class="sim-out" id="sim-out" aria-live="polite">
+            <div class="sim-placeholder">
+              <span class="big">Nothing sent yet.</span>
+              Choose a call on the left. The result is stamped here, with the exact point where it stopped.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What gets stopped -->
+    <section class="section" aria-labelledby="slips-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Rejection slips</p>
+          <h2 id="slips-title">What a loan app actually gets <em>caught doing.</em></h2>
+          <p>Each slip is a real reason code the gateway writes to the ledger. None of them depends on the developer remembering a rule.</p>
+        </div>
+        <div class="slips">
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">Blocked</span>
+            <code class="slip-code">consent-record-not-found</code>
+            <h4>Marketing reuses a loan consent</h4>
+            <p>The borrower agreed to an eligibility check, not a cross-sell campaign. Purpose is part of the consent.</p>
+            <span class="slip-where">Stopped by: consent authority</span>
+          </article>
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">Cut</span>
+            <code class="slip-code">consent-withdrawn</code>
+            <h4>Borrower says stop mid-fetch</h4>
+            <p>A bank-statement pull already in flight is closed within a second of the withdrawal, not when a token runs out.</p>
+            <span class="slip-where">Stopped by: egress proxy</span>
+          </article>
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">Blocked</span>
+            <code class="slip-code">host-not-allow-listed</code>
+            <h4>An SDK phones home abroad</h4>
+            <p>An analytics library deep in your dependencies posts profile data to a server outside your vendor list.</p>
+            <span class="slip-where">Stopped by: egress proxy</span>
+          </article>
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">Blocked</span>
+            <code class="slip-code">host-not-in-token</code>
+            <h4>Consent for one vendor, call to another</h4>
+            <p>The token says "bureau". The code connects to the AA. Each token names the hosts it may reach.</p>
+            <span class="slip-where">Stopped by: egress proxy</span>
+          </article>
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">Blocked</span>
+            <code class="slip-code">raw-ip-target</code>
+            <h4>Hard-coded IP to dodge the list</h4>
+            <p>Connecting to an address instead of a name is refused outright.</p>
+            <span class="slip-where">Stopped by: egress proxy</span>
+          </article>
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">Blocked</span>
+            <code class="slip-code">token-bad-signature</code>
+            <h4>The app writes its own consent</h4>
+            <p>Only the consent authority holds the signing key. A token the app made up is rejected.</p>
+            <span class="slip-where">Stopped by: egress proxy</span>
+          </article>
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">Blocked</span>
+            <code class="slip-code">token-tunnel-limit</code>
+            <h4>One leaked token, many connections</h4>
+            <p>A token lives 60 seconds and opens at most four connections, so a leak can't fan out.</p>
+            <span class="slip-where">Stopped by: egress proxy</span>
+          </article>
+          <article class="slip" data-reveal>
+            <span class="stamp stamp-bad">No route</span>
+            <code class="slip-code">network lockdown</code>
+            <h4>Code skips the proxy entirely</h4>
+            <p>App subnets have no route to the internet except through the proxy. Bypassing the SDK leads nowhere.</p>
+            <span class="slip-where">Stopped by: AWS network rules</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 30-second version -->
+    <section class="section section-alt" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">The 30-second version</p>
+          <h2 id="how-title">Three checks, one log, <em>one outside witness.</em></h2>
+        </div>
+        <div class="grid-3">
+          <div class="card" data-reveal>
+            <p class="step-n">1</p>
+            <h3>Ask before you send</h3>
+            <p class="muted">Your code asks the consent authority for a token naming the borrower, the purpose and the vendor. No valid consent, no token, no network call.</p>
+          </div>
+          <div class="card" data-reveal>
+            <p class="step-n">2</p>
+            <h3>Show the token at the gate</h3>
+            <p class="muted">The egress proxy checks the token, the host and the port, then opens an encrypted tunnel it cannot read. The network leaves no other way out.</p>
+          </div>
+          <div class="card" data-reveal>
+            <p class="step-n">3</p>
+            <h3>Write it where the NBFC can see</h3>
+            <p class="muted">Every decision is chained into a hash log. Your NBFC partner pulls signed checkpoints and gets an alarm if any witnessed history changes.</p>
+          </div>
+        </div>
+        <p style="margin-top: 28px;"><a href="how-it-works.html">Read the full design, with code →</a></p>
+      </div>
+    </section>
+
+    <!-- Honest limits -->
+    <section class="section" aria-labelledby="limits-title">
+      <div class="container grid-2" style="align-items: start;">
+        <div data-reveal>
+          <p class="eyebrow">No fine print</p>
+          <h2 id="limits-title">What VICT <em>won't</em> do for you.</h2>
+          <p class="lede" style="margin-top: 14px;">Compliance tools that claim everything are worse than none. Here are the gaps, stated up front.</p>
+          <a class="btn btn-ghost" href="self-host.html#limits">Full list of limits</a>
+        </div>
+        <ul class="checklist cross" data-reveal>
+          <li><strong>It can't make vendors delete data.</strong> Withdrawal stops future calls. Erasure of data a vendor already holds is still your job; the ledger shows who received it.</li>
+          <li><strong>A hostname isn't a data centre.</strong> The allow-list controls which vendors you call, not where they store data. That part stays contractual.</li>
+          <li><strong>The witness proves no rewrite, not completeness.</strong> It catches deleted or edited history. Network lockdown is what makes a missing record hard to arrange.</li>
+          <li><strong>DNS can still leak a little.</strong> Closing it needs AWS DNS Firewall, which is a paid service.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-tight">
+      <div class="container">
+        <div class="cta-panel" data-reveal>
+          <div>
+            <p class="eyebrow">Design partners wanted</p>
+            <h2>Pilot it with your NBFC partner, before May 2027.</h2>
+            <p>VICT is free and at the design-partner stage. We're looking for a few LSPs and an NBFC to run it on real traffic in their own AWS Mumbai accounts.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn" href="https://github.com/Jos-zenith/Sovereign-Portal/issues/new?title=Pilot%20request" rel="noopener">Request a pilot</a>
+            <a class="btn btn-ghost" href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">Read the code</a>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="index.html" aria-label="VICT home">
+            <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+            <span class="logo-word">VICT</span>
+          </a>
+          <p style="margin-top: 12px; max-width: 38ch;">A free, open-source egress gate for India's digital lenders. Runs in your own AWS Mumbai account.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="demo.html">Live demo</a></li>
+            <li><a href="nbfc.html">For NBFCs</a></li>
+            <li><a href="self-host.html">Self-host</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rules</h4>
+          <ul>
+            <li><a href="regulation.html">RBI &amp; DPDP map</a></li>
+            <li><a href="regulation.html#timeline">Deadlines</a></li>
+            <li><a href="VICT-Technical-Whitepaper.txt">Whitepaper (txt)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Code</h4>
+          <ul>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/blob/main/docs/PRODUCTION_READINESS.md" rel="noopener">Production readiness</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/issues" rel="noopener">Report an issue</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>Plain-language summaries of RBI and DPDP rules, not legal advice.</span>
+        <span>Demo vendors are stand-ins. No real borrower data is processed.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+  <script src="assets/home.js"></script>
 </body>
 </html>

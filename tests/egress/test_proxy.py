@@ -1,14 +1,18 @@
 """Pass criteria for the egress spike, exercised with raw CONNECT requests."""
 
 import base64
+import socket
+import socketserver
+import threading
 import time
 
 import pytest
 
 from src.egress import tokens
-from src.egress.audit import verify_chain
+from src.egress.audit import AuditLog, verify_chain
+from src.egress.consent import ConsentStore
 
-from .conftest import KEY, LSP, PURPOSE, events, open_tunnel, wait_for_event
+from .conftest import KEY, LSP, PURPOSE, ProxyThread, events, make_proxy, open_tunnel, wait_for_event
 
 
 def bearer(token: str) -> str:
@@ -67,11 +71,13 @@ def test_consent_revoked_after_issue_is_blocked(proxy, authority, store):
         ("127.0.0.1:443", "raw-ip-target"),
     ],
 )
-def test_wrong_destination_is_blocked(proxy, authority, target, reason):
+def test_wrong_destination_is_blocked(proxy, authority, audit, target, reason):
     token = authority.issue(LSP, "borrower-001", PURPOSE, ["bureau.test"])
     status, got, sock = open_tunnel(proxy.port, target, bearer(token))
     sock.close()
     assert (status, got) == (403, reason)
+    if reason != "raw-ip-target":
+        assert events(audit, "egress-blocked")[-1]["principal_id"] == "borrower-001"
 
 
 def test_forged_token_is_blocked(proxy):
@@ -126,3 +132,89 @@ def test_every_outcome_is_logged_in_one_valid_chain(proxy, authority, audit):
     assert len(events(audit, "egress-allowed")) == 1
     assert {r["reason"] for r in events(audit, "egress-blocked")} == {"token-missing", "host-not-allow-listed"}
     assert verify_chain(audit.path).ok
+
+
+def _is_closed(sock: socket.socket, timeout: float = 2.0) -> bool:
+    sock.settimeout(timeout)
+    try:
+        return sock.recv(16) == b""
+    except (ConnectionResetError, ConnectionAbortedError):
+        return True
+    except socket.timeout:
+        return False
+
+
+def test_revoking_consent_closes_open_tunnels_at_once(proxy, authority, store, audit):
+    """A withdrawal takes effect on tunnels already open, not when their token expires."""
+    tunnels = {}
+    for borrower in ("borrower-001", "borrower-002"):
+        token = authority.issue(LSP, borrower, PURPOSE, ["bureau.test"])
+        status, _, sock = open_tunnel(proxy.port, "bureau.test:443", bearer(token))
+        assert status == 200
+        tunnels[borrower] = sock
+
+    store.revoke(LSP, "borrower-001", PURPOSE)
+
+    assert _is_closed(tunnels["borrower-001"])
+    tunnels["borrower-002"].sendall(b"still-open")
+    assert tunnels["borrower-002"].recv(10) == b"still-open"
+    closed = wait_for_event(audit, "tunnel-closed")
+    for sock in tunnels.values():
+        sock.close()
+    assert (closed["principal_id"], closed["reason"]) == ("borrower-001", "consent-withdrawn")
+
+
+class _RevokedDuringCheck(ConsentStore):
+    """Consent is withdrawn just after the proxy's check has read it as valid."""
+
+    def check(self, lsp_id, principal_id, purpose):
+        result = super().check(lsp_id, principal_id, purpose)
+        self.revoke(lsp_id, principal_id, purpose)
+        return result
+
+
+def test_revocation_racing_the_consent_check_still_blocks(tmp_path, audit, echo_server):
+    store = _RevokedDuringCheck(tmp_path / "racy.db")
+    store.grant(LSP, "borrower-001", PURPOSE)
+    token = tokens.mint(KEY, lsp_id=LSP, principal_id="borrower-001", purpose=PURPOSE, hosts=["bureau.test"])
+    with ProxyThread(make_proxy(store, audit, echo_server)) as running:
+        status, reason, sock = open_tunnel(running.port, "bureau.test:443", bearer(token))
+        sock.close()
+    assert (status, reason) == (403, "consent-withdrawn")
+
+
+class _BrokenAudit(AuditLog):
+    broken = False
+
+    def append(self, event, **fields):
+        if self.broken:
+            raise OSError("disk full")
+        return super().append(event, **fields)
+
+
+def test_audit_failure_blocks_and_closes_both_sockets(tmp_path, store, authority):
+    """With no audit record there is no tunnel, and neither side is left holding a socket."""
+    upstream_closed = threading.Event()
+
+    class Upstream(socketserver.BaseRequestHandler):
+        def handle(self):
+            while self.request.recv(4096):
+                pass
+            upstream_closed.set()
+
+    server = socketserver.ThreadingTCPServer(("127.0.0.1", 0), Upstream)
+    server.daemon_threads = True
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    audit = _BrokenAudit(tmp_path / "broken.jsonl")
+    try:
+        token = authority.issue(LSP, "borrower-001", PURPOSE, ["bureau.test"])
+        audit.broken = True
+        with ProxyThread(make_proxy(store, audit, server.server_address[1])) as running:
+            status, reason, sock = open_tunnel(running.port, "bureau.test:443", bearer(token))
+            assert (status, reason) == (500, "proxy-error")
+            assert _is_closed(sock)
+            sock.close()
+            assert upstream_closed.wait(2)
+    finally:
+        server.shutdown()
+        server.server_close()

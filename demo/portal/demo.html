@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live demo · VICT</title>
+  <meta name="description" content="Seven things a loan app might do with borrower data, run against a live VICT gateway. See which check stops each one, then play the dishonest LSP." />
+  <meta name="vict-api-base" content="https://sovereign-portal.onrender.com" />
+  <meta name="theme-color" content="#f4efe4" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body data-own-poll>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="logo" href="index.html" aria-label="VICT home">
+        <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+        <span class="logo-word">VICT</span><span class="logo-sub">egress gate</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="nbfc.html">For NBFCs</a>
+        <a href="regulation.html">RBI &amp; DPDP</a>
+        <a href="self-host.html">Self-host</a>
+        <a class="btn btn-small" href="demo.html" aria-current="page">Live demo</a>
+      </nav>
+    </div>
+    <div class="ticker">
+      <div class="container ticker-row">
+        <span class="live-dot" id="ticker-dot"></span>
+        <span class="ticker-label">Demo gateway</span>
+        <span class="ticker-text" id="ticker-text">Connecting…</span>
+        <a href="#ledger" class="small">Ledger ↓</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="eyebrow">Live demo <span class="deva" lang="hi">परीक्षण</span></p>
+        <h1>Try to <em>break it.</em></h1>
+        <p class="lede">
+          Seven things a loan app might do with borrower data. Run each one against the real gateway and see which check stops it.
+          Then play the dishonest LSP and watch the NBFC's witness catch you.
+        </p>
+        <div class="status-row">
+          <span class="tag" id="pill-gateway">Gateway: connecting…</span>
+          <span class="tag" id="pill-chain">Audit chain: –</span>
+          <span class="tag" id="pill-witness">NBFC witness: –</span>
+          <span class="spacer"></span>
+          <span class="progress"><span class="progress-bar"><span id="progress-fill"></span></span><span id="progress-text">0 of 7 tried</span></span>
+          <button class="btn btn-ghost btn-small" type="button" id="btn-reset">Reset demo</button>
+        </div>
+        <p class="api-error" id="api-error" hidden></p>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="missions-title">
+      <div class="container console">
+        <div>
+          <h2 id="missions-title" class="visually-hidden">Missions</h2>
+          <ol class="missions" id="missions"></ol>
+        </div>
+        <aside class="desk" aria-labelledby="desk-title">
+          <div class="desk-head">
+            <h2 id="desk-title">Decision desk</h2>
+            <span id="desk-meta">waiting</span>
+          </div>
+          <div class="desk-body" id="desk" aria-live="polite">
+            <div class="sim-placeholder">
+              <span class="big">Run a mission.</span>
+              The decision is stamped here, with the point where the call stopped and the ledger entry it left behind.
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-label="Borrower and NBFC views">
+      <div class="container grid-2">
+        <div class="card">
+          <p class="eyebrow">Borrower <span class="deva" lang="hi">सहमति</span></p>
+          <h2 style="font-size: 1.6rem;">Consent vault</h2>
+          <p class="muted small" style="margin-top: 8px;">Consent is per lender and per purpose. Withdrawing it blocks the next call and cuts any connection already open.</p>
+          <div class="table-wrap">
+            <table class="vault-table">
+              <thead><tr><th>Borrower · purpose</th><th>Status</th><th><span class="visually-hidden">Action</span></th></tr></thead>
+              <tbody id="consent-rows"><tr><td colspan="3" class="muted">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <p class="eyebrow">NBFC partner <span class="deva" lang="hi">साक्ष्य</span></p>
+          <h2 style="font-size: 1.6rem;">Evidence</h2>
+          <div class="counts">
+            <div class="count"><b id="c-tokens">–</b><span>consent tokens issued</span></div>
+            <div class="count"><b id="c-allowed">–</b><span>connections allowed</span></div>
+            <div class="count"><b id="c-before">–</b><span>blocked before any network call</span></div>
+            <div class="count"><b id="c-proxy">–</b><span>blocked at the proxy</span></div>
+          </div>
+          <h3 style="font-size: 1rem; font-family: var(--font-sans);">Blocked, by reason</h3>
+          <ul class="reasons" id="reasons"><li class="muted">Nothing blocked yet.</li></ul>
+          <div class="witness-box" id="witness"><p class="muted">Witness starting…</p></div>
+          <p class="small faint" style="margin-top: 10px;">In production the witness runs at the NBFC. Here it runs on the same server and polls every few seconds.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight" id="ledger" aria-labelledby="ledger-title">
+      <div class="container">
+        <div class="section-head" style="margin-bottom: 20px;">
+          <p class="eyebrow">Audit ledger <span class="deva" lang="hi">बही</span></p>
+          <h2 id="ledger-title">Every decision, <em>newest first.</em></h2>
+          <p>Each entry's hash covers the one before it. Change any line and every hash after it changes, which is what the NBFC's witness checks.</p>
+        </div>
+        <div class="ledger-wrap ledger-paper">
+          <div class="table-wrap">
+            <table class="ledger-table">
+              <thead><tr><th>#</th><th>Time (IST)</th><th>Event</th><th>Borrower</th><th>Purpose</th><th>Destination</th><th>Reason</th><th>Chain</th></tr></thead>
+              <tbody id="log-rows"><tr><td colspan="8" class="muted">No entries yet.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight" aria-labelledby="custom-title">
+      <div class="container">
+        <div class="card">
+          <p class="eyebrow">Free play</p>
+          <h2 id="custom-title" style="font-size: 1.6rem; margin-bottom: 16px;">Build your own call</h2>
+          <form id="custom-form" class="form-grid">
+            <label>Borrower <select name="principal_id" id="f-borrower"></select></label>
+            <label>Purpose <select name="purpose" id="f-purpose"></select></label>
+            <label>Consent asked for <select name="token_host" id="f-token-host"></select></label>
+            <label>Code connects to <select name="target_host" id="f-target-host"></select></label>
+            <label>Port <select name="target_port" id="f-port"><option value="443">443 (HTTPS)</option><option value="8443">8443</option><option value="80">80</option></select></label>
+            <button type="submit" class="btn">Run call</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="index.html" aria-label="VICT home">
+            <svg class="logo-seal" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="17.5" stroke-width="3"/><circle cx="20" cy="20" r="12.5" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M13.5 13.5 20 27.5l6.5-14" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+            <span class="logo-word">VICT</span>
+          </a>
+          <p style="margin-top: 12px; max-width: 38ch;">A free, open-source egress gate for India's digital lenders. Runs in your own AWS Mumbai account.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <ul>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="demo.html">Live demo</a></li>
+            <li><a href="nbfc.html">For NBFCs</a></li>
+            <li><a href="self-host.html">Self-host</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rules</h4>
+          <ul>
+            <li><a href="regulation.html">RBI &amp; DPDP map</a></li>
+            <li><a href="regulation.html#timeline">Deadlines</a></li>
+            <li><a href="VICT-Technical-Whitepaper.txt">Whitepaper (txt)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Code</h4>
+          <ul>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/blob/main/docs/PRODUCTION_READINESS.md" rel="noopener">Production readiness</a></li>
+            <li><a href="https://github.com/Jos-zenith/Sovereign-Portal/issues" rel="noopener">Report an issue</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-fine">
+        <span>Plain-language summaries of RBI and DPDP rules, not legal advice.</span>
+        <span>Demo vendors are stand-ins. No real borrower data is processed.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+  <script src="assets/demo.js"></script>
+</body>
+</html>
