@@ -143,6 +143,18 @@ PowerShell one-shot demo:
 powershell -ExecutionPolicy Bypass -File demo/run_demo.ps1
 ```
 
+## Egress Gate Spike
+
+A consent-gated CONNECT proxy plus a thin SDK, so LSPs can enforce consent on outbound calls without rewriting code into Wasm:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
+python demo/egress_spike_demo.py
+```
+
+Design, pass criteria and open gaps are in [docs/EGRESS_SPIKE.md](docs/EGRESS_SPIKE.md).
+
 ## IDE Plugin Direction
 
 See `docs/IDE_PLUGIN_SPEC.md` for diagnostics and quick-fix behavior of the VICT security co-pilot extension.

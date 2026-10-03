@@ -152,11 +152,10 @@ def evaluate_sovereignty_policy(region: str, data_classification: str, consent_a
         "-d",
         OPA_POLICY_PATH,
         "-I",
-        json.dumps(input_doc),
         "data.vict.sovereignty.allow_region",
     ]
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        result = subprocess.run(cmd, input=json.dumps(input_doc), capture_output=True, text=True, check=False)
     except FileNotFoundError:
         return region in {"ap-south-1", "ap-south-2"}
 

@@ -1,0 +1,6 @@
+{
+  "vict_config": {
+    "allowed_hosts": ["bureau.test", "aa.test"],
+    "allowed_ports": [443]
+  }
+}
